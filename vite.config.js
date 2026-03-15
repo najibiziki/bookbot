@@ -8,22 +8,22 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["ico.png"], // The icon in your public folder
+      includeAssets: ["ico.png", "icon-192.png", "icon-512.png"],
       manifest: {
         name: "BookBot Business",
         short_name: "BookBot",
         description: "Appointment scheduling app for businesses",
-        theme_color: "#0f172a", // Matches your dark button color
+        theme_color: "#0f172a",
         background_color: "#ffffff",
         display: "standalone",
         icons: [
           {
-            src: "ico.png", // We will use your current icon
+            src: "icon-192.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "ico.png",
+            src: "icon-512.png",
             sizes: "512x512",
             type: "image/png",
           },
@@ -32,6 +32,6 @@ export default defineConfig({
     }),
   ],
   server: {
-    port: 3000, // Matches your Landing Page links
+    port: 3000,
   },
 });
