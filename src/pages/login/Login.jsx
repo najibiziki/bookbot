@@ -1,5 +1,5 @@
 /* --- Imports --- */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import API_URL from "../../api";
@@ -13,7 +13,13 @@ export default function Login() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  useEffect(() => {
+    // If user is already logged in, kick them to dashboard
+    if (userInfo) {
+      navigate("/dashboard");
+    }
+  }, [userInfo, navigate]);
   /* Handlers */
   const handleLogin = async (e) => {
     e.preventDefault();

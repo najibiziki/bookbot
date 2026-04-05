@@ -12,9 +12,20 @@ import AdminRoute from "./components/AdminRoutes";
 import "./App.css";
 
 function App() {
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+          path="/"
+          element={
+            userInfo ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
