@@ -1,4 +1,4 @@
-/* register.css */
+/* Layout */
 .register-wrapper {
   min-height: 100vh;
   display: flex;
@@ -12,6 +12,7 @@
     sans-serif;
 }
 
+/* Card */
 .register-card {
   width: 100%;
   max-width: 400px;
@@ -23,7 +24,7 @@
 
 .register-card h1 {
   text-align: center;
-  color: #4f46e5; /* New Indigo Color */
+  color: #4f46e5;
   margin-bottom: 0.5rem;
   font-size: 1.75rem;
   font-weight: 700;
@@ -36,6 +37,7 @@
   font-size: 0.9rem;
 }
 
+/* Form */
 .register-form {
   display: flex;
   flex-direction: column;
@@ -46,7 +48,8 @@
   width: 100%;
   padding: 14px 16px;
   border: 1px solid #e5e7eb;
-  background-color: #ffffff; /* Forced White Background */
+  background-color: #ffffff;
+  color: #1f2937;
   border-radius: 8px;
   font-size: 1rem;
   transition:
@@ -65,6 +68,7 @@
   color: #9ca3af;
 }
 
+/* Button */
 .register-btn {
   width: 100%;
   padding: 14px;
@@ -83,6 +87,7 @@
   background-color: #4338ca;
 }
 
+/* Footer */
 .register-footer {
   text-align: center;
   margin-top: 1.5rem;

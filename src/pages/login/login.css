@@ -1,10 +1,10 @@
-/* login.css */
+/* Layout */
 .login-wrapper {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f3f4f6; /* Light grey background */
+  background-color: #f3f4f6;
   padding: 20px;
   font-family:
     system-ui,
@@ -12,6 +12,7 @@
     sans-serif;
 }
 
+/* Card */
 .login-card {
   width: 100%;
   max-width: 400px;
@@ -23,7 +24,7 @@
 
 .login-card h1 {
   text-align: center;
-  color: #4f46e5; /* New Indigo Color */
+  color: #4f46e5;
   margin-bottom: 0.5rem;
   font-size: 1.75rem;
   font-weight: 700;
@@ -36,6 +37,7 @@
   font-size: 0.9rem;
 }
 
+/* Form */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -46,7 +48,8 @@
   width: 100%;
   padding: 14px 16px;
   border: 1px solid #e5e7eb;
-  background-color: #ffffff; /* Forced White Background */
+  background-color: #ffffff;
+  color: #1f2937;
   border-radius: 8px;
   font-size: 1rem;
   transition:
@@ -65,10 +68,11 @@
   color: #9ca3af;
 }
 
+/* Button */
 .login-btn {
   width: 100%;
   padding: 14px;
-  background-color: #4f46e5; /* New Indigo Color */
+  background-color: #4f46e5;
   color: white;
   border: none;
   border-radius: 8px;
@@ -83,21 +87,7 @@
   background-color: #4338ca;
 }
 
-.login-footer {
-  text-align: center;
-  margin-top: 1.5rem;
-  color: #6b7280;
-  font-size: 0.9rem;
-}
-
-.login-footer a {
-  color: #4f46e5;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-/* Add to the bottom of login.css */
-
+/* Links */
 .login-link-wrapper {
   text-align: right;
   margin-top: -10px;
@@ -113,4 +103,18 @@
 
 .login-link:hover {
   text-decoration: underline;
+}
+
+/* Footer */
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.login-footer a {
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 600;
 }

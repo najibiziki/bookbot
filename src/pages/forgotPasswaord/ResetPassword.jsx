@@ -1,25 +1,42 @@
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
 import "./forgot.css";
-
+import { useState } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import API_URL from "../../api";
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [error, setError] = useState("");
   const { token } = useParams();
+  const navigate = useNavigate();
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
       return;
     }
 
-    console.log("Updating password for token:", token);
-    alert("Password updated successfully! Please login.");
+    try {
+      const response = await fetch(
+        `${API_URL}/api/auth/resetpassword/${token}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password }),
+        },
+      );
 
-    window.location.href = "/login";
+      const data = await response.json();
+
+      if (response.ok) {
+        navigate("/login");
+      } else {
+        setError(data.message || "Failed to reset password");
+      }
+    } catch (err) {
+      setError("Failed to connect to server");
+    }
   };
 
   return (
@@ -27,6 +44,8 @@ export default function ResetPassword() {
       <div className="forgot-card">
         <h1>Set New Password</h1>
         <p>Please enter your new password below.</p>
+
+        {error && <div className="auth-message error">{error}</div>}
 
         <form className="forgot-form" onSubmit={handleUpdate}>
           <input

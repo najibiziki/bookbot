@@ -13,6 +13,8 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.1",
+    "react-select": "^5.10.2",
+    "react-timezone-select": "^3.3.3",
     "vite-plugin-pwa": "^0.19.8"
   },
   "devDependencies": {

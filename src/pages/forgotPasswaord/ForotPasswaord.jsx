@@ -1,25 +1,47 @@
-// src/pages/ForgotPassword/ForgotPassword.jsx
+import "./forgot.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import "./forgot.css";
-
+import API_URL from "../../api";
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  const handleReset = (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
-    // TODO: Later, this will trigger your backend to send an email
-    alert(`A password reset link has been sent to ${email}. (Backend pending)`);
+    setError("");
+    setMessage("");
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/forgotpassword`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(data.message || "Reset link sent! Check your email.");
+      } else {
+        setError(data.message || "Something went wrong");
+      }
+    } catch (err) {
+      setError("Failed to connect to server. Is the backend running?");
+    }
   };
 
   return (
     <div className="forgot-wrapper">
       <div className="forgot-card">
         <h1>Reset Password</h1>
-        <p>
-          Enter the email address associated with your account. We will send you
-          a link to reset your password.
-        </p>
+        <p>Enter the email address associated with your account.</p>
+
+        {message && <div className="auth-message success">{message}</div>}
+
+        {error && <div className="auth-message error">{error}</div>}
 
         <form className="forgot-form" onSubmit={handleReset}>
           <input
@@ -30,6 +52,7 @@ export default function ForgotPassword() {
             required
           />
           <button
+            type="submit"
             className="login-btn"
             style={{
               width: "100%",
