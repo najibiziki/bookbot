@@ -129,7 +129,6 @@
 .btn-delete-admin:hover {
   background-color: #fef2f2;
 }
-/* ... existing CSS ... */
 
 .action-cell {
   display: flex;
@@ -155,30 +154,6 @@
 .btn-edit-admin:hover {
   background-color: #e5e7eb;
 }
-.status-toggle {
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: none;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.status-toggle.active {
-  background-color: #dcfce7;
-  color: #166534;
-}
-
-.status-toggle.inactive {
-  background-color: #fee2e2;
-  color: #b91c1c;
-}
-
-.status-toggle.trial.active {
-  background-color: #fef3c7; /* Yellow for trial */
-  color: #92400e;
-}
 
 .status-toggle {
   padding: 6px 12px;
@@ -201,9 +176,10 @@
 }
 
 .status-toggle.trial.active {
-  background-color: #fef3c7; /* Yellow for trial */
+  background-color: #fef3c7;
   color: #92400e;
 }
+
 /* Date text under buttons */
 .status-date {
   margin-top: 5px;
@@ -224,14 +200,15 @@
 }
 
 .trial-badge.active {
-  background-color: #fef3c7; /* Yellow */
+  background-color: #fef3c7;
   color: #92400e;
 }
 
 .trial-badge.inactive {
-  background-color: #e5e7eb; /* Grey */
+  background-color: #e5e7eb;
   color: #374151;
 }
+
 /* Table Structure */
 .admin-table-wrapper {
   background: #fff;
@@ -318,7 +295,7 @@
 
 /* Trial Colors */
 .toggle-btn.trial-active {
-  background-color: #dbeafe; /* Blue */
+  background-color: #dbeafe;
   color: #1e40af;
 }
 
@@ -372,11 +349,83 @@
 .btn-delete-admin:hover {
   background: #fee2e2;
 }
-
-/* Mobile Responsive */
+/* =========================================
+   MOBILE RESPONSIVE (FULLY UPDATED)
+   ========================================= */
 @media (max-width: 768px) {
+  /* 1. Makes content take almost the full width of the screen */
+  .admin-container {
+    padding: 1rem;
+  }
+
+  /* 2. Shrinks the main heading */
+  .admin-container h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* 3. Stacks the input and button on top of each other */
+  .token-form {
+    flex-direction: column;
+  }
+
+  /* 4. Reduces padding inside the card */
+  .token-update-card {
+    padding: 1rem;
+  }
+
+  /* 5. Shrinks card text */
+  .token-update-card h3 {
+    font-size: 1rem;
+  }
+
+  .token-update-card p {
+    font-size: 0.8rem;
+  }
+
+  /* 6. Shrinks input and button */
+  .token-form input {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  .btn-update-token {
+    font-size: 0.85rem;
+    padding: 8px 16px;
+  }
+
+  /* 7. Makes the table text smaller */
+  .admin-table th,
   .admin-table td {
-    padding: 12px 15px;
+    padding: 10px 12px;
+  }
+
+  .admin-table th {
+    font-size: 0.7rem;
+  }
+
+  .admin-table td {
+    font-size: 0.8rem;
+  }
+
+  /* 8. Shrinks badges and toggle buttons */
+  .plan-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+
+  .toggle-btn {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    min-width: 70px;
+  }
+
+  .trial-badge {
+    font-size: 0.7rem;
+  }
+
+  .status-cell {
+    min-width: 120px;
   }
 
   .action-cell {
