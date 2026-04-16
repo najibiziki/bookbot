@@ -32,7 +32,6 @@ function BusinessProfile() {
       {success && <div className="auth-message success">{success}</div>}
 
       <form onSubmit={handlers.handleSubmit} className="business-form">
-        {/* Basic Info */}
         <section className="form-section">
           <h2>Basic Information</h2>
 
@@ -74,7 +73,7 @@ function BusinessProfile() {
             </div>
 
             <div className="form-group admin-field">
-              <label>WhatsApp Phone ID </label>
+              <label>WhatsApp Phone ID</label>
               <input
                 type="text"
                 name="phoneId"
@@ -117,6 +116,7 @@ function BusinessProfile() {
                 Booking times will be saved in this timezone.
               </small>
             </div>
+
             <div className="form-group">
               <label>Booking Interval (min)</label>
               <input
@@ -130,9 +130,9 @@ function BusinessProfile() {
           </div>
         </section>
 
-        {/* Working Hours */}
         <section className="form-section">
           <h2>Working Hours</h2>
+
           <div className="schedule-container">
             {DAYS.map((day) => (
               <div key={day} className="schedule-row">
@@ -143,7 +143,7 @@ function BusinessProfile() {
                 <div className="shifts-area">
                   {schedule[day].length === 0 ? (
                     <div className="closed-text">
-                      Closed
+                      Closed{" "}
                       <button
                         type="button"
                         className="add-shift-btn"
@@ -170,7 +170,9 @@ function BusinessProfile() {
                             }
                             className="shift-input"
                           />
+
                           <span className="shift-arrow">→</span>
+
                           <input
                             type="time"
                             value={slot.end}
@@ -184,6 +186,7 @@ function BusinessProfile() {
                             }
                             className="shift-input"
                           />
+
                           <button
                             type="button"
                             className="shift-remove"
@@ -193,6 +196,7 @@ function BusinessProfile() {
                           </button>
                         </div>
                       ))}
+
                       <button
                         type="button"
                         className="add-shift-btn"
@@ -208,102 +212,243 @@ function BusinessProfile() {
           </div>
         </section>
 
-        {/* Staff & Services */}
-        <div className="grid-2-col">
-          <section className="form-section">
-            <h2>Staff</h2>
-            {staff.map((member, idx) => (
-              <div key={idx} className="mini-list-item">
-                <input
-                  type="text"
-                  placeholder="Name"
-                  value={member.name}
-                  onChange={(e) =>
-                    handlers.updateStaff(idx, "name", e.target.value)
-                  }
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Role (e.g. Barber)"
-                  value={member.role}
-                  onChange={(e) =>
-                    handlers.updateStaff(idx, "role", e.target.value)
-                  }
-                />
-                <input
-                  type="number"
-                  placeholder="Price ($)"
-                  value={member.price}
-                  onChange={(e) =>
-                    handlers.updateStaff(idx, "price", e.target.value)
-                  }
-                />
+        <section className="form-section">
+          <h2>Staff</h2>
+
+          {staff.map((member, idx) => (
+            <div key={idx} className="staff-card">
+              <div className="staff-main-row">
+                <div className="input-group">
+                  <label className="input-label">Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. John"
+                    value={member.name}
+                    onChange={(e) =>
+                      handlers.updateStaff(idx, "name", e.target.value)
+                    }
+                    required
+                    className="staff-input"
+                  />
+                </div>
+
+                <div className="input-group">
+                  <label className="input-label">Role</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Barber"
+                    value={member.role}
+                    onChange={(e) =>
+                      handlers.updateStaff(idx, "role", e.target.value)
+                    }
+                    className="staff-input"
+                  />
+                </div>
+
+                <div className="staff-sub-row">
+                  <div className="input-group">
+                    <label className="input-label">Add-ons ($)</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={member.price}
+                      onChange={(e) =>
+                        handlers.updateStaff(idx, "price", e.target.value)
+                      }
+                      className="staff-input-sm"
+                    />
+                  </div>
+
+                  <div className="input-group">
+                    <label className="input-label">Extra Time (min)</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={member.extraTime}
+                      onChange={(e) =>
+                        handlers.updateStaff(idx, "extraTime", e.target.value)
+                      }
+                      className="staff-input-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="staff-section-label">Weekly Days Off</div>
+
+              <div className="days-off-container">
+                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+                  (day) => {
+                    const dayVal = day.toLowerCase();
+                    const isSelected = member.weeklyOff?.includes(dayVal);
+
+                    return (
+                      <div
+                        key={day}
+                        onClick={() =>
+                          handlers.handleStaffDayOff(idx, dayVal, !isSelected)
+                        }
+                        className={`day-off-pill ${isSelected ? "active" : ""}`}
+                      >
+                        {day}
+                      </div>
+                    );
+                  },
+                )}
+              </div>
+
+              <div className="vacation-box">
+                <div className="vacation-title-row">
+                  <span className="vacation-title">
+                    <i className="fas fa-plane-departure"></i> Vacations
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => handlers.addStaffVacation(idx)}
+                    className="vacation-add-icon"
+                    title="Add vacation"
+                  >
+                    <i className="fas fa-plus"></i>
+                  </button>
+                </div>
+
+                {member.vacations?.length > 0 && (
+                  <div className="vacation-grid">
+                    {member.vacations.map((vac, vacIdx) => (
+                      <div key={vacIdx} className="vacation-item">
+                        <input
+                          type="date"
+                          value={vac.start ? vac.start.split("T")[0] : ""}
+                          onChange={(e) =>
+                            handlers.updateStaffVacation(
+                              idx,
+                              vacIdx,
+                              "start",
+                              e.target.value,
+                            )
+                          }
+                          className="vacation-input"
+                        />
+
+                        <span className="vacation-separator">→</span>
+
+                        <input
+                          type="date"
+                          value={vac.end ? vac.end.split("T")[0] : ""}
+                          onChange={(e) =>
+                            handlers.updateStaffVacation(
+                              idx,
+                              vacIdx,
+                              "end",
+                              e.target.value,
+                            )
+                          }
+                          className="vacation-input"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handlers.removeStaffVacation(idx, vacIdx)
+                          }
+                          className="vacation-del-icon"
+                        >
+                          <i className="fas fa-trash-alt"></i>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {(!member.vacations || member.vacations.length === 0) && (
+                  <div className="vacation-empty">No vacations added</div>
+                )}
+              </div>
+
+              <div className="staff-delete-row">
                 <button
                   type="button"
-                  className="btn-icon-remove"
+                  className="staff-delete-btn"
                   onClick={() => handlers.removeStaff(idx)}
                 >
-                  <i className="fas fa-trash"></i>
+                  <i className="fas fa-trash-alt"></i> Delete Staff
                 </button>
               </div>
-            ))}
-            <button
-              type="button"
-              className="btn-secondary btn-block"
-              onClick={handlers.addStaff}
-            >
-              + Add Staff
-            </button>
-          </section>
+            </div>
+          ))}
 
-          <section className="form-section">
-            <h2>Services</h2>
-            {services.map((service, idx) => (
-              <div key={idx} className="mini-list-item">
+          <button
+            type="button"
+            className="btn-secondary btn-block"
+            onClick={handlers.addStaff}
+          >
+            + Add Staff
+          </button>
+        </section>
+
+        {/* SERVICES SECTION (Below Staff) */}
+        <section className="form-section">
+          <h2>Services</h2>
+          {services.map((service, idx) => (
+            <div key={idx} className="mini-list-item">
+              <div className="input-group">
+                <label className="input-label">Service Name</label>
                 <input
                   type="text"
-                  placeholder="Service Name"
                   value={service.name}
                   onChange={(e) =>
                     handlers.updateService(idx, "name", e.target.value)
                   }
                   required
+                  className="staff-input"
                 />
+              </div>
+
+              <div className="input-group">
+                <label className="input-label">Duration (min)</label>
                 <input
                   type="number"
-                  placeholder="Duration (min)"
                   value={service.duration}
                   onChange={(e) =>
                     handlers.updateService(idx, "duration", e.target.value)
                   }
+                  className="staff-input"
                 />
+              </div>
+
+              <div className="input-group">
+                <label className="input-label">Base Price ($)</label>
                 <input
                   type="number"
-                  placeholder="Price ($)"
                   value={service.price}
                   onChange={(e) =>
                     handlers.updateService(idx, "price", e.target.value)
                   }
+                  className="staff-input"
                 />
+              </div>
+
+              {/* Exact same wrapper and button as Staff */}
+              <div className="staff-delete-row">
                 <button
                   type="button"
-                  className="btn-icon-remove"
+                  className="staff-delete-btn"
                   onClick={() => handlers.removeService(idx)}
                 >
-                  <i className="fas fa-trash"></i>
+                  <i className="fas fa-trash-alt"></i> Delete Service
                 </button>
               </div>
-            ))}
-            <button
-              type="button"
-              className="btn-secondary btn-block"
-              onClick={handlers.addService}
-            >
-              + Add Service
-            </button>
-          </section>
-        </div>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="btn-secondary btn-block"
+            onClick={handlers.addService}
+          >
+            + Add Service
+          </button>
+        </section>
 
         <button type="submit" className="btn-primary btn-full">
           {business ? "Update Business" : "Create Business"}

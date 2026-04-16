@@ -45,15 +45,19 @@ export default function Navbar() {
               <i className="fas fa-calendar-alt icon-left"></i> Dashboard
             </Link>
           </li>
-          <li className="nav-item">
-            <Link
-              to="/business-profile"
-              className="nav-links"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <i className="fas fa-store icon-left"></i> Business Profile
-            </Link>
-          </li>
+
+          {/* ADDED: Hide this link if the user is an admin */}
+          {!userInfo?.isAdmin && (
+            <li className="nav-item">
+              <Link
+                to="/business-profile"
+                className="nav-links"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <i className="fas fa-store icon-left"></i> Business Profile
+              </Link>
+            </li>
+          )}
 
           {userInfo && userInfo.isAdmin && (
             <li className="nav-item">
