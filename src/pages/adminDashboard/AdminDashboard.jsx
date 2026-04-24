@@ -49,7 +49,7 @@ function AdminDashboard() {
             <tr>
               <th>Owner</th>
               <th>Phone Number</th>
-              <th>Status</th>
+              <th>Payment</th>
               <th>Trial</th>
               <th>Action</th>
             </tr>
@@ -67,7 +67,7 @@ function AdminDashboard() {
                   <td data-label="Phone">{biz.phoneNumber || "N/A"}</td>
 
                   {/* Status Column */}
-                  <td data-label="Status" className="status-cell">
+                  <td data-label="Payment" className="status-cell">
                     <button
                       className={`toggle-btn ${biz.ownerId?.isActive ? "active-green" : "inactive-red"}`}
                       onClick={() =>
@@ -78,7 +78,7 @@ function AdminDashboard() {
                         )
                       }
                     >
-                      {biz.ownerId?.isActive ? "Active" : "Inactive"}
+                      {biz.ownerId?.isActive ? "Paid" : "Unpaid"}
                     </button>
                     <div className="date-info">
                       {showPaidDate && (

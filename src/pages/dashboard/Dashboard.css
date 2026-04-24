@@ -1,15 +1,176 @@
-.dashboard-container {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+.table-container {
+  padding: 10px;
+  max-width: 100%;
 }
 
-.calendar-placeholder {
-  margin-top: 2rem;
-  padding: 2rem;
-  background-color: #f9fafb;
-  border: 1px dashed #d1d5db;
-  border-radius: 8px;
+.table-container h2 {
+  font-size: 1rem;
+  margin: 0 0 10px 0;
+}
+
+/* Staff Filter */
+.staff-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.staff-filter label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.staff-filter select {
+  padding: 5px 8px;
+  font-size: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.empty-state {
+  color: #888;
+  font-size: 0.8rem;
   text-align: center;
+  padding: 20px;
+}
+
+/* Table Wrapper for Mobile Scroll */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Table - Compact Mobile Style */
+.appt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.7rem;
+  min-width: 500px;
+}
+
+.appt-table thead th {
+  padding: 6px 4px;
+  text-align: left;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #888;
+  border-bottom: 1px solid #eee;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.appt-table tbody td {
+  padding: 7px 4px;
+  border-bottom: 1px solid #f5f5f5;
+  vertical-align: middle;
+}
+
+.appt-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+/* Date & Time */
+.td-datetime {
+  white-space: nowrap;
+}
+
+.date-text {
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: #333;
+}
+
+.time-text {
+  font-size: 0.65rem;
+  color: #777;
+}
+
+/* Client Name */
+.td-name {
+  font-weight: 500;
+  font-size: 0.7rem;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Phone Link - Small & Bold */
+.phone-link {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #2563eb;
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+}
+
+.phone-link:hover,
+.phone-link:active {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Service */
+.td-service {
+  font-size: 0.68rem;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Duration */
+.td-duration {
+  font-size: 0.68rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+/* Price */
+.td-price {
+  font-weight: 600;
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.status-confirmed {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-cancelled {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-completed {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-noshow {
+  background-color: #f3f4f6;
   color: #6b7280;
 }
