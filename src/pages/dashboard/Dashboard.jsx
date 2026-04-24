@@ -1,164 +1,159 @@
-import { useState, useEffect } from "react";
 import moment from "moment-timezone";
-import API_URL from "../../api";
+import { useAppointments } from "../../hooks/useAppointments";
 import "./Dashboard.css";
 
 export default function Dashboard() {
-  const [appointments, setAppointments] = useState([]);
-  const [timezone, setTimezone] = useState("UTC");
-  const [loading, setLoading] = useState(true);
-  const [selectedStaff, setSelectedStaff] = useState("all");
+  const {
+    sortedAppointments,
+    staffList,
+    isDropdownOpen,
+    setIsDropdownOpen,
+    dropdownRef,
+    handleSelect,
+    loading,
+    selectedStaff,
+    formatPhoneNumber,
+    getCleanPhone,
+    timezone,
+  } = useAppointments();
 
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const token = userInfo ? userInfo.token : null;
-
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/business/appointments`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setAppointments(data.appointments);
-          setTimezone(data.timezone);
-        }
-      } catch (err) {
-        console.error("Failed to fetch");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAppointments();
-  }, [token]);
-
-  // Extract unique staff names
-  const staffList = [...new Set(appointments.map((app) => app.staffName))]
-    .filter(Boolean)
-    .sort();
-
-  // Filter appointments by selected staff
-  const filteredAppointments =
-    selectedStaff === "all"
-      ? appointments
-      : appointments.filter((app) => app.staffName === selectedStaff);
-
-  // Format phone number (Moroccan format: +212 6 11 69 34 94)
-  const formatPhoneNumber = (phone) => {
-    if (!phone) return "";
-    const cleaned = phone.replace(/[+\s\-()]/g, "");
-
-    // Handle Moroccan numbers
-    if (cleaned.startsWith("06")) {
-      return `+212 ${cleaned.slice(1, 2)} ${cleaned.slice(2, 4)} ${cleaned.slice(4, 6)} ${cleaned.slice(6, 8)} ${cleaned.slice(8, 10)}`;
-    }
-    if (cleaned.startsWith("6") && cleaned.length === 9) {
-      return `+212 ${cleaned.slice(0, 1)} ${cleaned.slice(1, 3)} ${cleaned.slice(3, 5)} ${cleaned.slice(5, 7)} ${cleaned.slice(7, 9)}`;
-    }
-    if (cleaned.startsWith("2126") && cleaned.length === 12) {
-      return `+${cleaned.slice(0, 3)} ${cleaned.slice(3, 4)} ${cleaned.slice(4, 6)} ${cleaned.slice(6, 8)} ${cleaned.slice(8, 10)} ${cleaned.slice(10, 12)}`;
-    }
-    // Default: add + if not present
-    return phone.startsWith("+") ? phone : `+${phone}`;
-  };
-
-  // Sort by importance: upcoming first (soonest), then past (most recent)
-  const sortedAppointments = [...filteredAppointments].sort((a, b) => {
-    const now = new Date();
-    const dateA = new Date(a.startTime);
-    const dateB = new Date(b.startTime);
-
-    const isUpcomingA = dateA >= now;
-    const isUpcomingB = dateB >= now;
-
-    // Upcoming before past
-    if (isUpcomingA && !isUpcomingB) return -1;
-    if (!isUpcomingA && isUpcomingB) return 1;
-
-    // Within same category: soonest first
-    return dateA - dateB;
-  });
-
-  if (loading)
-    return <div className="table-container">Loading schedule...</div>;
+  if (loading) {
+    return (
+      <div className="page-wrapper">
+        <div className="table-container">Loading schedule...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="table-container">
-      <h2>Appointment Schedule</h2>
+    <div className="page-wrapper">
+      <div className="table-container">
+        {staffList.length > 0 && (
+          <div className="staff-filter">
+            <label>Staff:</label>
 
-      {/* Staff Filter Dropdown */}
-      {staffList.length > 0 && (
-        <div className="staff-filter">
-          <label htmlFor="staff-select">Staff:</label>
-          <select
-            id="staff-select"
-            value={selectedStaff}
-            onChange={(e) => setSelectedStaff(e.target.value)}
-          >
-            <option value="all">All Staff</option>
-            {staffList.map((staff) => (
-              <option key={staff} value={staff}>
-                {staff}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+            <div className="custom-select" ref={dropdownRef}>
+              <div
+                className="select-trigger"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                {/* FIX: Show the actual selected staff name */}
+                <span>
+                  {selectedStaff === "all" ? "All Staff" : selectedStaff}
+                </span>
 
-      {sortedAppointments.length === 0 ? (
-        <p className="empty-state">No appointments found.</p>
-      ) : (
-        <div className="table-wrapper">
-          <table className="appt-table">
-            <thead>
-              <tr>
-                <th>Date & Time</th>
-                <th>Client</th>
-                <th>Phone</th>
-                <th>Service</th>
-                <th>Duration</th>
-                <th>Price</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedAppointments.map((app) => (
-                <tr key={app._id}>
-                  <td className="td-datetime">
-                    <div className="date-text">
-                      {moment
-                        .utc(app.startTime)
-                        .tz(timezone)
-                        .format("ddd, DD MMM")}
-                    </div>
-                    <div className="time-text">
-                      {moment.utc(app.startTime).tz(timezone).format("HH:mm")} -{" "}
-                      {moment.utc(app.endTime).tz(timezone).format("HH:mm")}
-                    </div>
-                  </td>
-                  <td className="td-name">{app.clientName}</td>
-                  <td>
-                    <a href={`tel:${app.clientPhone}`} className="phone-link">
-                      {formatPhoneNumber(app.clientPhone)}
-                    </a>
-                  </td>
-                  <td className="td-service">{app.serviceName}</td>
-                  <td className="td-duration">
-                    {app.totalDuration || app.serviceDuration}m
-                  </td>
-                  <td className="td-price">${app.totalPrice}</td>
-                  <td>
-                    <span className={`status-badge status-${app.status}`}>
-                      {app.status}
-                    </span>
-                  </td>
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="#333">
+                  <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                </svg>
+              </div>
+
+              {isDropdownOpen && (
+                <ul className="select-options">
+                  {/* FIX: Add active class based on selectedStaff */}
+                  <li
+                    className={selectedStaff === "all" ? "active" : ""}
+                    onClick={() => handleSelect("all")}
+                  >
+                    All Staff
+                  </li>
+                  {staffList.map((staff) => (
+                    <li
+                      key={staff}
+                      className={selectedStaff === staff ? "active" : ""}
+                      onClick={() => handleSelect(staff)}
+                    >
+                      {staff}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+
+        {sortedAppointments.length === 0 ? (
+          <p className="empty-state">No upcoming appointments.</p>
+        ) : (
+          <div className="table-wrapper">
+            <table className="appt-table">
+              <thead>
+                <tr>
+                  <th className="th-center">Date</th>
+                  <th>Client</th>
+                  <th>Service</th>
+                  <th>Phone</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {sortedAppointments.map((app) => (
+                  <tr key={app._id}>
+                    <td className="td-date">
+                      <div className="date-line1">
+                        {moment
+                          .utc(app.startTime)
+                          .tz(timezone)
+                          .format("ddd DD MMM")}
+                      </div>
+                      <div className="date-line2">
+                        {moment.utc(app.startTime).tz(timezone).format("HH:mm")}{" "}
+                        - {moment.utc(app.endTime).tz(timezone).format("HH:mm")}
+                      </div>
+                    </td>
+                    <td className="td-client-info">
+                      <div className="client-name">{app.clientName}</div>
+                      <div className="staff-name">{app.staffName}</div>
+                    </td>
+                    <td className="td-service">
+                      <div className="svc-line1">{app.serviceName}</div>
+                      <div className="svc-line2">
+                        {app.totalDuration || app.serviceDuration} min | $
+                        {app.totalPrice}
+                      </div>
+                    </td>
+                    <td className="td-phone">
+                      <div className="phone-number">
+                        {formatPhoneNumber(app.clientPhone)}
+                      </div>
+                      <div className="phone-icons">
+                        <a
+                          href={`tel:${app.clientPhone}`}
+                          className="icon-btn icon-call"
+                          title="Call"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            width="14"
+                            height="14"
+                            fill="currentColor"
+                          >
+                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                          </svg>
+                        </a>
+                        <a
+                          href={`https://wa.me/${getCleanPhone(app.clientPhone)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="icon-btn icon-wa"
+                          title="WhatsApp"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            width="14"
+                            height="14"
+                            fill="currentColor"
+                          >
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                          </svg>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
