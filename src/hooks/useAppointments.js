@@ -9,8 +9,9 @@ export const useAppointments = () => {
   const [selectedStaff, setSelectedStaff] = useState("all");
 
   // Specific Day state
-  const [selectedDay, setSelectedDay] = useState("");
-
+  const [selectedDay, setSelectedDay] = useState(
+    new Date().toLocaleDateString("en-CA"),
+  );
   // Dropdown logic state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);

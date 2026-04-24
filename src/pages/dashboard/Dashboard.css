@@ -19,15 +19,16 @@
 .staff-filter {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   margin-bottom: 32px;
-  flex-wrap: wrap; /* Allows them to wrap nicely on small screens */
+  flex-wrap: wrap; /* Wraps on medium screens */
 }
 
+/* Wrapper for Label + Input pair */
 .input-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .input-group label {
@@ -37,9 +38,14 @@
   white-space: nowrap;
 }
 
-/* Date Input */
+/* ==========================================
+   FORCE EXACT SAME HEIGHT FOR ALL 3 INPUTS
+   ========================================== */
+
+/* 1. Date Input */
 .week-input {
-  padding: 5px 10px;
+  height: 34px; /* Fixed height */
+  padding: 0 10px; /* REMOVED top/bottom padding so height controls it */
   background-color: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -50,6 +56,7 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
   font-family: inherit;
+  box-sizing: border-box; /* Ensures border doesn't add to height */
 }
 .week-input:hover {
   border-color: #9ca3af;
@@ -59,17 +66,18 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Custom Dropdown */
+/* 2. Custom Dropdown */
 .custom-select {
   position: relative;
-  min-width: 140px;
+  min-width: 130px;
   user-select: none;
+  height: 34px; /* Fixed height */
 }
 .select-trigger {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2px 12px;
+  padding: 0 12px; /* REMOVED top/bottom padding */
   background-color: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -79,6 +87,8 @@
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
+  height: 100%; /* Fill the 34px height */
+  box-sizing: border-box;
 }
 .select-trigger span {
   text-align: left;
@@ -121,37 +131,77 @@
   text-align: left;
 }
 
-/* NEW: Toggle Button Styles */
+/* 3. View Toggle */
 .view-toggle {
   display: flex;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  overflow: hidden; /* Makes the inner buttons have sharp joined corners */
+  overflow: hidden;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  height: 34px; /* Fixed height matching the others */
+  box-sizing: border-box;
 }
 
 .view-toggle button {
-  padding: 4px 12px;
-  font-size: 0.7rem;
+  padding: 0 12px; /* No vertical padding */
+  font-size: 0.75rem;
   font-weight: 500;
   background-color: #ffffff;
   color: #555;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-right: 1px solid #e5e7eb; /* Line between buttons */
+  border-right: 1px solid #e5e7eb;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .view-toggle button:last-child {
-  border-right: none; /* Remove line from last button */
+  border-right: none;
 }
-
+.view-toggle button:hover:not(.active) {
+  background-color: #f9fafb;
+}
 .view-toggle button.active {
-  background-color: #333; /* Dark background when active */
-  color: #ffffff; /* White text when active */
+  background-color: #333;
+  color: #ffffff;
 }
 
-/* NEW: Placeholder for Calendar */
+/* ==========================================
+   MOBILE STYLES (FORCE ONE LINE)
+   ========================================== */
+@media (max-width: 480px) {
+  .staff-filter {
+    flex-wrap: nowrap; /* Forces them to stay on one line */
+    gap: 8px; /* Tighter gap for small screens */
+  }
+
+  .input-group {
+    gap: 4px; /* Tighter gap between label and input */
+  }
+
+  .input-group label {
+    font-size: 0.65rem; /* Smaller labels */
+  }
+
+  /* Let inputs shrink to fit on one line */
+  .custom-select {
+    min-width: auto;
+    flex: 1; /* Takes up available space */
+  }
+
+  .week-input {
+    flex: 1; /* Takes up available space */
+  }
+
+  .view-toggle {
+    flex-shrink: 0; /* Prevents icons from squishing too much */
+  }
+}
+
+/* Placeholder for Calendar */
 .calendar-placeholder {
   display: flex;
   align-items: center;
