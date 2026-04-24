@@ -1,4 +1,4 @@
-/* Responsive Width: 80% Big Screen, 100% Small Screen */
+/* Responsive Width */
 .page-wrapper {
   width: 80%;
   margin: 60px auto;
@@ -11,41 +11,60 @@
   }
 }
 
-/* Container & Title */
 .table-container {
   padding: 10px;
 }
 
-.table-container h2 {
-  font-size: 1rem;
-  margin: 0 0 10px 0;
-  color: #333;
-  text-align: center;
-}
-
-/* Staff Filter Wrapper - SNAPPED TO THE LEFT */
+/* Staff Filter Wrapper */
 .staff-filter {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
   margin-bottom: 32px;
-  /* Removed justify-content: center so it stays on the left */
+  flex-wrap: wrap; /* Allows them to wrap nicely on small screens */
 }
 
-.staff-filter label {
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input-group label {
   font-size: 0.75rem;
   font-weight: 600;
   color: #333;
+  white-space: nowrap;
 }
 
-/* Custom Dropdown Base */
+/* Date Input */
+.week-input {
+  padding: 5px 10px;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #222222;
+  outline: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+.week-input:hover {
+  border-color: #9ca3af;
+}
+.week-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Custom Dropdown */
 .custom-select {
   position: relative;
   min-width: 140px;
   user-select: none;
 }
-
-/* Dropdown Button */
 .select-trigger {
   display: flex;
   justify-content: space-between;
@@ -61,16 +80,12 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
-
 .select-trigger span {
   text-align: left;
 }
-
 .select-trigger:hover {
   border-color: #9ca3af;
 }
-
-/* Dropdown List (Smaller height, strictly LEFT ALIGNED) */
 .select-options {
   position: absolute;
   top: calc(100% + 4px);
@@ -88,7 +103,6 @@
   overflow-y: auto;
   text-align: left;
 }
-
 .select-options li {
   padding: 5px 12px;
   font-size: 0.75rem;
@@ -97,11 +111,9 @@
   transition: background-color 0.15s ease;
   text-align: left;
 }
-
 .select-options li:hover {
   background-color: #f3f4f6;
 }
-
 .select-options li.active {
   color: #2563eb;
   font-weight: 600;
@@ -109,137 +121,44 @@
   text-align: left;
 }
 
-/* Empty State */
-.empty-state {
-  color: #888;
-  font-size: 0.8rem;
-  text-align: center;
-  padding: 20px;
-}
-
-/* Table Wrapper */
-.table-wrapper {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Table Core (Table text is CENTERED) */
-.appt-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.72rem;
-  min-width: 440px;
-}
-
-.appt-table thead th {
-  padding: 6px 6px;
-  text-align: center;
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: #888;
-  border-bottom: 2px solid #ddd;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.appt-table tbody td {
-  padding: 10px 6px;
-  border-bottom: 1px solid #eee;
-  vertical-align: middle;
-  text-align: center;
-}
-
-/* Date Column */
-.date-line1 {
-  font-weight: 700;
-  font-size: 0.75rem;
-  color: #333;
-  margin-bottom: 2px;
-}
-
-.date-line2 {
-  font-size: 0.65rem;
-  color: #777;
-}
-
-/* Client & Staff Column */
-.client-name {
-  font-weight: 600;
-  font-size: 0.72rem;
-  color: #333;
-  margin-bottom: 2px;
-}
-
-.staff-name {
-  font-size: 0.6rem;
-  color: #999;
-}
-
-/* Service Column */
-.svc-line1 {
-  font-weight: 600;
-  font-size: 0.72rem;
-  color: #333;
-  margin-bottom: 2px;
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.svc-line2 {
-  font-size: 0.65rem;
-  color: #666;
-  white-space: nowrap;
-}
-
-/* Phone Column */
-.td-phone {
-  min-width: 110px;
-}
-
-.phone-number {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 5px;
-  letter-spacing: -0.2px;
-}
-
-.phone-icons {
+/* NEW: Toggle Button Styles */
+.view-toggle {
   display: flex;
-  gap: 8px;
-  justify-content: center;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  overflow: hidden; /* Makes the inner buttons have sharp joined corners */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-/* Icons (Small, transparent, soft radius) */
-.icon-btn {
+.view-toggle button {
+  padding: 4px 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background-color: #ffffff;
+  color: #555;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-right: 1px solid #e5e7eb; /* Line between buttons */
+}
+
+.view-toggle button:last-child {
+  border-right: none; /* Remove line from last button */
+}
+
+.view-toggle button.active {
+  background-color: #333; /* Dark background when active */
+  color: #ffffff; /* White text when active */
+}
+
+/* NEW: Placeholder for Calendar */
+.calendar-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  background-color: transparent;
-  border-radius: 5px;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  transition: background-color 0.2s ease;
-  border: 1px solid rgb(50, 49, 49);
-}
-
-.icon-call {
-  color: #2563eb;
-}
-
-.icon-call:hover {
-  background-color: #eff6ff;
-}
-
-.icon-wa {
-  color: #16a34a;
-}
-
-.icon-wa:hover {
-  background-color: #f0fdf4;
+  height: 200px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  color: #888;
+  font-size: 0.9rem;
 }

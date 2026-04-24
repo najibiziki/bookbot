@@ -1,0 +1,127 @@
+/* Empty State */
+.empty-state {
+  color: #888;
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Table Wrapper */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Table Core */
+.appt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+  min-width: 440px;
+}
+
+.appt-table thead th {
+  padding: 6px 6px;
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #888;
+  border-bottom: 2px solid #ddd;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.appt-table tbody td {
+  padding: 10px 6px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* Date Column */
+.date-line1 {
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #333;
+  margin-bottom: 2px;
+}
+.date-line2 {
+  font-size: 0.65rem;
+  color: #777;
+}
+
+/* Client & Staff Column */
+.client-name {
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: #333;
+  margin-bottom: 2px;
+}
+.staff-name {
+  font-size: 0.6rem;
+  color: #999;
+}
+
+/* Service Column */
+.svc-line1 {
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: #333;
+  margin-bottom: 2px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.svc-line2 {
+  font-size: 0.65rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+/* Phone Column */
+.td-phone {
+  min-width: 110px;
+}
+.phone-number {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 5px;
+  letter-spacing: -0.2px;
+}
+.phone-icons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Icons */
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: transparent;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+  border: 1px solid rgb(50, 49, 49);
+}
+
+.icon-call {
+  color: #2563eb;
+}
+.icon-call:hover {
+  background-color: #eff6ff;
+}
+
+.icon-wa {
+  color: #16a34a;
+}
+.icon-wa:hover {
+  background-color: #f0fdf4;
+}

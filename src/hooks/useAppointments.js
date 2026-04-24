@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react"; // Added useRef
-import API_URL from "../api"; // Adjust path based on where you put this hook
+import { useState, useEffect, useRef } from "react";
+import moment from "moment-timezone"; // REQUIRED FOR DAY MATCHING
+import API_URL from "../api"; // Adjust path if needed
 
 export const useAppointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -7,14 +8,17 @@ export const useAppointments = () => {
   const [loading, setLoading] = useState(true);
   const [selectedStaff, setSelectedStaff] = useState("all");
 
-  // --- MOVED DROPDOWN LOGIC HERE ---
+  // Specific Day state
+  const [selectedDay, setSelectedDay] = useState("");
+
+  // Dropdown logic state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const token = userInfo ? userInfo.token : null;
 
-  // Fetch Appointments
+  // Fetch Data
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -35,7 +39,7 @@ export const useAppointments = () => {
     fetchAppointments();
   }, [token]);
 
-  // Close dropdown if clicking outside of it
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -46,35 +50,44 @@ export const useAppointments = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle selecting a staff member from the custom dropdown
   const handleSelect = (staff) => {
     setSelectedStaff(staff);
     setIsDropdownOpen(false);
   };
-  // ---------------------------------
 
-  // Extract unique staff names
+  // Extract unique staff
   const staffList = [...new Set(appointments.map((app) => app.staffName))]
     .filter(Boolean)
     .sort();
 
-  // Filter by selected staff
+  // Filter by Staff
   const filteredAppointments =
     selectedStaff === "all"
       ? appointments
       : appointments.filter((app) => app.staffName === selectedStaff);
 
   // Filter ONLY future appointments
-  const futureAppointments = filteredAppointments.filter(
+  let futureAppointments = filteredAppointments.filter(
     (app) => new Date(app.startTime) >= new Date(),
   );
 
-  // Sort upcoming soonest first
+  // Filter by EXACT Selected Day (Timezone aware)
+  if (selectedDay) {
+    futureAppointments = futureAppointments.filter((app) => {
+      const appDateStr = moment
+        .utc(app.startTime)
+        .tz(timezone)
+        .format("YYYY-MM-DD");
+      return appDateStr === selectedDay;
+    });
+  }
+
+  // Sort soonest first
   const sortedAppointments = [...futureAppointments].sort(
     (a, b) => new Date(a.startTime) - new Date(b.startTime),
   );
 
-  // Phone formatting utilities
+  // Phone formatting
   const formatPhoneNumber = (phone) => {
     if (!phone) return "";
     const cleaned = phone.replace(/[+\s\-()]/g, "");
@@ -99,14 +112,16 @@ export const useAppointments = () => {
   return {
     sortedAppointments,
     staffList,
+    selectedStaff,
     isDropdownOpen,
     setIsDropdownOpen,
-    selectedStaff,
     dropdownRef,
     handleSelect,
     loading,
     formatPhoneNumber,
     getCleanPhone,
     timezone,
+    selectedDay,
+    setSelectedDay,
   };
 };
