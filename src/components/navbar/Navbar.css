@@ -6,6 +6,9 @@
   align-items: center;
   position: sticky;
   top: 0;
+  left: 0; /* ADD THIS */
+  right: 0; /* ADD THIS */
+  width: 100%; /* ADD THIS */
   z-index: 999;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }

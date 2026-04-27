@@ -1,6 +1,6 @@
 /* Page wrapper */
 .page-wrapper {
-  width: 98%;
+  width: 80%;
   margin: 60px auto;
 }
 
@@ -37,6 +37,17 @@
   padding: 10px;
   width: 100%;
   min-width: 0;
+  box-sizing: border-box; /* ADD THIS: Ensures padding doesn't make it wider than 100% */
+  overflow-x: auto; /* ADD THIS: If calendar is too wide, it scrolls INSIDE here, not the whole phone */
+}
+
+/* Optional: If you want to completely HIDE the scrollbar but keep the ability to swipe left/right on the calendar, add this: */
+.table-container::-webkit-scrollbar {
+  display: none;
+}
+.table-container {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 /* Calendar placeholder */
