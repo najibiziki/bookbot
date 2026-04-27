@@ -1,12 +1,7 @@
 import moment from "moment-timezone";
 import "./AppointmentTable.css";
-
-export default function AppointmentTable({
-  appointments,
-  timezone,
-  formatPhoneNumber,
-  getCleanPhone,
-}) {
+import { formatPhoneNumber, getCleanPhone } from "../../utils/phone";
+export default function AppointmentTable({ appointments, timezone }) {
   if (appointments.length === 0) {
     return (
       <p className="empty-state">

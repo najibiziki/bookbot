@@ -1,6 +1,6 @@
-/* Responsive Width */
+/* Page wrapper */
 .page-wrapper {
-  width: 80%;
+  width: 98%;
   margin: 60px auto;
 }
 
@@ -8,200 +8,37 @@
   .page-wrapper {
     width: 100%;
     margin: 10px 0;
+    padding: 0 10px;
   }
 }
 
+/* Grid layout */
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+@media (min-width: 860px) {
+  .layout-grid {
+    grid-template-columns: auto 1fr;
+    align-items: self-start;
+  }
+
+  /* push left column down */
+  .layout-grid > .staff-filter {
+    margin-top: 22px;
+  }
+}
+
+/* Table container */
 .table-container {
   padding: 10px;
+  width: 100%;
+  min-width: 0;
 }
 
-/* Staff Filter Wrapper */
-.staff-filter {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
-  flex-wrap: wrap; /* Wraps on medium screens */
-}
-
-/* Wrapper for Label + Input pair */
-.input-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.input-group label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #333;
-  white-space: nowrap;
-}
-
-/* ==========================================
-   FORCE EXACT SAME HEIGHT FOR ALL 3 INPUTS
-   ========================================== */
-
-/* 1. Date Input */
-.week-input {
-  height: 34px; /* Fixed height */
-  padding: 0 10px; /* REMOVED top/bottom padding so height controls it */
-  background-color: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #222222;
-  outline: none;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-  font-family: inherit;
-  box-sizing: border-box; /* Ensures border doesn't add to height */
-}
-.week-input:hover {
-  border-color: #9ca3af;
-}
-.week-input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* 2. Custom Dropdown */
-.custom-select {
-  position: relative;
-  min-width: 130px;
-  user-select: none;
-  height: 34px; /* Fixed height */
-}
-.select-trigger {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 12px; /* REMOVED top/bottom padding */
-  background-color: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #222222;
-  cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-  height: 100%; /* Fill the 34px height */
-  box-sizing: border-box;
-}
-.select-trigger span {
-  text-align: left;
-}
-.select-trigger:hover {
-  border-color: #9ca3af;
-}
-.select-options {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  z-index: 50;
-  padding: 2px 0;
-  max-height: 200px;
-  overflow-y: auto;
-  text-align: left;
-}
-.select-options li {
-  padding: 5px 12px;
-  font-size: 0.75rem;
-  color: #222222;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-  text-align: left;
-}
-.select-options li:hover {
-  background-color: #f3f4f6;
-}
-.select-options li.active {
-  color: #2563eb;
-  font-weight: 600;
-  background-color: #eff6ff;
-  text-align: left;
-}
-
-/* 3. View Toggle */
-.view-toggle {
-  display: flex;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  height: 34px; /* Fixed height matching the others */
-  box-sizing: border-box;
-}
-
-.view-toggle button {
-  padding: 0 12px; /* No vertical padding */
-  font-size: 0.75rem;
-  font-weight: 500;
-  background-color: #ffffff;
-  color: #555;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-right: 1px solid #e5e7eb;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.view-toggle button:last-child {
-  border-right: none;
-}
-.view-toggle button:hover:not(.active) {
-  background-color: #f9fafb;
-}
-.view-toggle button.active {
-  background-color: #333;
-  color: #ffffff;
-}
-
-/* ==========================================
-   MOBILE STYLES (FORCE ONE LINE)
-   ========================================== */
-@media (max-width: 480px) {
-  .staff-filter {
-    flex-wrap: nowrap; /* Forces them to stay on one line */
-    gap: 8px; /* Tighter gap for small screens */
-  }
-
-  .input-group {
-    gap: 4px; /* Tighter gap between label and input */
-  }
-
-  .input-group label {
-    font-size: 0.65rem; /* Smaller labels */
-  }
-
-  /* Let inputs shrink to fit on one line */
-  .custom-select {
-    min-width: auto;
-    flex: 1; /* Takes up available space */
-  }
-
-  .week-input {
-    flex: 1; /* Takes up available space */
-  }
-
-  .view-toggle {
-    flex-shrink: 0; /* Prevents icons from squishing too much */
-  }
-}
-
-/* Placeholder for Calendar */
+/* Calendar placeholder */
 .calendar-placeholder {
   display: flex;
   align-items: center;

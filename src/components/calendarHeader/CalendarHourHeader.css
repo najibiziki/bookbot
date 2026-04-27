@@ -1,0 +1,45 @@
+.h-cal-header {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.h-cal-header-spacer {
+  width: 38px;
+  flex-shrink: 0;
+  height: 28px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.h-cal-header .h-cal-time-track {
+  flex-grow: 1;
+  position: relative;
+  height: 24px;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.h-cal-hour-marker {
+  position: absolute;
+  top: 20px;
+  font-size: 0.55rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  user-select: none;
+  z-index: 10;
+  font-weight: 500;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .h-cal-header-spacer {
+    width: 32px;
+  }
+
+  .h-cal-hour-marker {
+    font-size: 0.5rem;
+  }
+}
