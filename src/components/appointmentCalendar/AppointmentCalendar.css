@@ -1,38 +1,43 @@
+/* =========================
+   CALENDAR CONTAINER
+========================= */
 .h-calendar-container {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  padding-bottom: 20px;
-  overflow-x: auto;
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding doesn't break width */
+  padding: 0 3px 20px 3px;
+  /* overflow-x removed - parent .table-container handles scrolling safely */
 }
 
-/* ===== Row layout ===== */
+/* =========================
+   ROW LAYOUT
+========================= */
 .h-cal-row {
   display: flex;
   gap: 8px;
   align-items: flex-end;
 }
 
-/* ===== Day label ===== */
+/* =========================
+   DAY LABEL
+========================= */
 .h-cal-day-label {
   width: 38px;
   height: 28px;
   flex-shrink: 0;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   margin-bottom: 2px;
 }
 
-/* Today state */
 .h-cal-row.is-today .h-cal-day-label {
   background: #2563eb;
   border-color: #2563eb;
@@ -40,7 +45,6 @@
   box-shadow: 0 2px 6px -2px rgba(37, 99, 235, 0.5);
 }
 
-/* Day text */
 .h-cal-day-name {
   font-size: 0.5rem;
   font-weight: 700;
@@ -54,38 +58,36 @@
   line-height: 1.1;
 }
 
-/* ===== Time track ===== */
+/* =========================
+   TIME TRACK
+========================= */
 .h-cal-time-track {
   flex-grow: 1;
   position: relative;
   height: 28px;
-
   background-color: transparent;
   background-size: 100% 100%;
-
   border: none;
   box-shadow: none;
-  overflow: visible;
+  overflow: visible; /* Allows appointment blocks to sit cleanly */
 }
 
-/* ===== Appointment block ===== */
+/* =========================
+   APPOINTMENT BLOCK
+========================= */
 .h-cal-appointment {
   position: absolute;
   top: 0;
   height: 100%;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   padding: 0 5px;
   box-sizing: border-box;
   overflow: hidden;
-
   z-index: 5;
   cursor: default;
-
   background: linear-gradient(
     90deg,
     #111827 0%,
@@ -93,29 +95,26 @@
     #047857 60%,
     #10b981 100%
   );
-
   transition: all 0.2s ease;
 }
 
 .h-cal-appointment:hover {
   background: linear-gradient(90deg, #111827 0%, #065f46 40%, #059669 100%);
-
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* Appointment text */
+/* =========================
+   APPOINTMENT TEXT
+========================= */
 .h-cal-app-name {
   font-size: 0.5rem;
   font-weight: 700;
   color: #fff;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
   max-width: 100%;
   line-height: 1.1;
-
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -123,13 +122,14 @@
   font-size: 0.45rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
-
   white-space: nowrap;
   line-height: 1;
   flex-shrink: 0;
 }
 
-/* ===== Mobile ===== */
+/* =========================
+   MOBILE STYLES
+========================= */
 @media (max-width: 480px) {
   .h-cal-day-label {
     width: 32px;
@@ -145,6 +145,7 @@
     font-size: 0.6rem;
   }
 
+  /* Hide text on tiny screens, show only colored blocks */
   .h-cal-app-name,
   .h-cal-app-time {
     display: none;

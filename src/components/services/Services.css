@@ -1,0 +1,117 @@
+/* =========================
+   SERVICE ITEM LAYOUT
+========================= */
+.mini-list-item {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.mini-list-item input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-sizing: border-box; /* Critical bug fix */
+}
+
+/* =========================
+   INPUT GROUPS (Shared)
+========================= */
+.input-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+}
+
+.input-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.staff-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+/* =========================
+   DELETE ROW
+========================= */
+/* Forces the delete button to stretch across all 3 columns */
+.mini-list-item .staff-delete-row {
+  grid-column: 1 / -1;
+  margin-top: 0;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.staff-delete-btn {
+  background: transparent;
+  border: 1px solid #fecaca;
+  color: #ef4444;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.staff-delete-btn:hover {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+}
+
+/* =========================
+   SHARED BUTTONS
+========================= */
+.btn-secondary {
+  background: #f3f4f6;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #4b5563;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .mini-list-item {
+    grid-template-columns: 1fr; /* Stacks inputs vertically on phones */
+  }
+
+  .input-group {
+    flex-wrap: wrap;
+  }
+
+  .input-label {
+    margin-bottom: 4px;
+  }
+}

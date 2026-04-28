@@ -1,0 +1,153 @@
+/* =========================
+   SCHEDULE CONTAINER
+========================= */
+.schedule-container {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.schedule-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f3f4f6;
+  background: #fff;
+}
+
+.schedule-row:last-child {
+  border-bottom: none;
+}
+
+/* =========================
+   DAY LABEL
+========================= */
+.day-label {
+  width: 80px;
+  padding: 12px 15px;
+  background: #f9fafb;
+  border-right: 1px solid #e5e7eb;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  flex-shrink: 0;
+}
+
+/* =========================
+   SHIFTS AREA
+========================= */
+.shifts-area {
+  flex: 1;
+  padding: 8px 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* =========================
+   SHIFT INPUTS & GROUP
+========================= */
+.shift-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f9fafb;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #f3f4f6;
+}
+
+.shift-input {
+  border: none;
+  background: transparent;
+  padding: 4px;
+  font-size: 0.9rem;
+  color: #111827;
+  cursor: pointer;
+}
+
+.shift-input:focus {
+  outline: none;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px #4f46e5; /* Matches your form focus color */
+}
+
+.shift-arrow {
+  color: #9ca3af;
+  font-size: 0.8rem;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+.shift-remove {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0 4px;
+  margin-left: 2px;
+  transition: color 0.2s;
+}
+
+.shift-remove:hover {
+  color: #ef4444;
+}
+
+.add-shift-btn {
+  background: none;
+  border: 1px dashed #d1d5db;
+  color: #6b7280;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-shift-btn:hover {
+  border-color: #4f46e5;
+  color: #4f46e5;
+}
+
+.closed-text {
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Spaces out "Closed" and the "+ Add Hours" button */
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .schedule-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .day-label {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.8rem;
+    padding: 10px 15px;
+  }
+
+  .shift-input {
+    font-size: 0.8rem;
+  }
+
+  .add-shift-btn {
+    font-size: 0.75rem;
+  }
+
+  .closed-text {
+    font-size: 0.8rem;
+  }
+}

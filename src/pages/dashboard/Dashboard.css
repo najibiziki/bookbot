@@ -1,19 +1,23 @@
-/* Page wrapper */
+/* =========================
+   PAGE WRAPPER
+========================= */
 .page-wrapper {
   width: 80%;
   margin: 60px auto;
+  overflow-x: hidden;
 }
 
 @media (max-width: 768px) {
   .page-wrapper {
     width: 100%;
     margin: 10px 0;
-    padding: 0 10px;
-    max-width: 1200px;
+    padding: 0; /* Removed padding from here to fix the centering */
   }
 }
 
-/* Grid layout */
+/* =========================
+   GRID LAYOUT
+========================= */
 .layout-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -26,31 +30,34 @@
     align-items: self-start;
   }
 
-  /* push left column down */
+  /* Push left column down to align with table content */
   .layout-grid > .staff-filter {
     margin-top: 22px;
   }
 }
 
-/* Table container */
+/* =========================
+   TABLE / CALENDAR CONTAINER
+========================= */
 .table-container {
-  padding: 10px;
   width: 100%;
   min-width: 0;
-  box-sizing: border-box; /* ADD THIS: Ensures padding doesn't make it wider than 100% */
-  overflow-x: auto; /* ADD THIS: If calendar is too wide, it scrolls INSIDE here, not the whole phone */
+  box-sizing: border-box;
+  padding: 10px; /* Equal padding on all sides fixes the right-edge touching issue */
+  overflow-x: auto;
+
+  /* Hide scrollbar but keep swipe ability */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Optional: If you want to completely HIDE the scrollbar but keep the ability to swipe left/right on the calendar, add this: */
 .table-container::-webkit-scrollbar {
   display: none;
 }
-.table-container {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
 
-/* Calendar placeholder */
+/* =========================
+   CALENDAR PLACEHOLDER
+========================= */
 .calendar-placeholder {
   display: flex;
   align-items: center;

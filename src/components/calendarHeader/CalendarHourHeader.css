@@ -1,27 +1,40 @@
+/* =========================
+   HEADER CONTAINER
+========================= */
 .h-cal-header {
   display: flex;
   gap: 8px;
   margin-bottom: 9px;
 }
 
+/* =========================
+   HEADER SPACER
+========================= */
 .h-cal-header-spacer {
   width: 38px;
   flex-shrink: 0;
   height: 28px;
   background: transparent;
-  border: none;
-  box-shadow: none;
+  border: none; /* Restored to kill the border */
+  box-shadow: none; /* Restored to kill any shadow */
 }
 
+/* =========================
+   HEADER TIME TRACK
+========================= */
 .h-cal-header .h-cal-time-track {
   flex-grow: 1;
   position: relative;
   height: 24px;
   background-color: transparent;
-  border: none;
-  box-shadow: none;
+  background-size: 100% 100%;
+  border: none; /* Restored to kill the border */
+  box-shadow: none; /* Restored to kill any shadow */
 }
 
+/* =========================
+   HOUR MARKER TEXT
+========================= */
 .h-cal-hour-marker {
   position: absolute;
   top: 20px;
@@ -33,7 +46,9 @@
   font-weight: 500;
 }
 
-/* Mobile */
+/* =========================
+   MOBILE STYLES
+========================= */
 @media (max-width: 480px) {
   .h-cal-header-spacer {
     width: 32px;

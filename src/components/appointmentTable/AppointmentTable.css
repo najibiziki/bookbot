@@ -1,4 +1,6 @@
-/* Empty State */
+/* =========================
+   EMPTY STATE
+========================= */
 .empty-state {
   color: #888;
   font-size: 0.8rem;
@@ -6,22 +8,34 @@
   padding: 20px;
 }
 
-/* Table Wrapper */
+/* =========================
+   TABLE WRAPPER
+========================= */
 .table-wrapper {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+
+  /* Hide scrollbar but keep swipe ability (Matches calendar style) */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Table Core */
+.table-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================
+   TABLE CORE
+========================= */
 .appt-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.72rem;
-  min-width: 440px;
+  min-width: 440px; /* Forces horizontal scroll on small screens */
 }
 
 .appt-table thead th {
-  padding: 6px 6px;
+  padding: 6px;
   text-align: center;
   font-size: 0.65rem;
   font-weight: 600;
@@ -38,6 +52,9 @@
   text-align: center;
 }
 
+/* =========================
+   COLUMN STYLES
+========================= */
 /* Date Column */
 .date-line1 {
   font-weight: 700;
@@ -45,6 +62,7 @@
   color: #333;
   margin-bottom: 2px;
 }
+
 .date-line2 {
   font-size: 0.65rem;
   color: #777;
@@ -57,6 +75,7 @@
   color: #333;
   margin-bottom: 2px;
 }
+
 .staff-name {
   font-size: 0.6rem;
   color: #999;
@@ -64,16 +83,20 @@
 
 /* Service Column */
 .svc-line1 {
+  display: inline-block; /* ADDED: Allows the box to be centered */
+  text-align: center; /* ADDED: Centers text inside the 120px box */
   font-weight: 600;
   font-size: 0.72rem;
   color: #333;
   margin-bottom: 2px;
   max-width: 120px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
+
 .svc-line2 {
+  text-align: center; /* ADDED: Ensures price/duration is centered */
   font-size: 0.65rem;
   color: #666;
   white-space: nowrap;
@@ -83,6 +106,7 @@
 .td-phone {
   min-width: 110px;
 }
+
 .phone-number {
   font-size: 0.65rem;
   font-weight: 700;
@@ -90,13 +114,15 @@
   margin-bottom: 5px;
   letter-spacing: -0.2px;
 }
+
 .phone-icons {
   display: flex;
   gap: 8px;
   justify-content: center;
 }
-
-/* Icons */
+/* =========================
+   ACTION ICONS
+========================= */
 .icon-btn {
   display: flex;
   align-items: center;
@@ -104,17 +130,17 @@
   width: 24px;
   height: 24px;
   background-color: transparent;
+  border: 1px solid rgb(50, 49, 49); /* Fixed duplicate border property */
   border-radius: 5px;
   text-decoration: none;
   cursor: pointer;
-  border: none;
   transition: background-color 0.2s ease;
-  border: 1px solid rgb(50, 49, 49);
 }
 
 .icon-call {
   color: #2563eb;
 }
+
 .icon-call:hover {
   background-color: #eff6ff;
 }
@@ -122,6 +148,7 @@
 .icon-wa {
   color: #16a34a;
 }
+
 .icon-wa:hover {
   background-color: #f0fdf4;
 }

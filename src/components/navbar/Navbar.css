@@ -1,3 +1,6 @@
+/* =========================
+   MAIN NAVBAR
+========================= */
 .navbar {
   background-color: #ffffff;
   height: 75px;
@@ -6,10 +9,10 @@
   align-items: center;
   position: sticky;
   top: 0;
-  left: 0; /* ADD THIS */
-  right: 0; /* ADD THIS */
-  width: 100%; /* ADD THIS */
-  z-index: 999;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 100;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
@@ -21,6 +24,9 @@
   padding: 0 20px;
 }
 
+/* =========================
+   BRAND & USER STATUS
+========================= */
 .navbar-brand {
   display: flex;
   flex-direction: column;
@@ -74,6 +80,9 @@
   }
 }
 
+/* =========================
+   DESKTOP MENU
+========================= */
 .nav-menu {
   display: flex;
   list-style: none;
@@ -114,6 +123,9 @@
   text-align: center;
 }
 
+/* =========================
+   MENU VARIANTS
+========================= */
 .logout-btn {
   border: 1px solid #fee2e2;
   color: #ef4444;
@@ -137,42 +149,41 @@
   font-size: 1.5rem;
   cursor: pointer;
   color: #374151;
-  z-index: 1001;
+  z-index: 120; /* Must be highest so you can always click the X */
 }
 
-/* --- MOBILE STYLES --- */
+/* =========================
+   MOBILE STYLES
+========================= */
 @media screen and (max-width: 768px) {
   .menu-icon {
     display: block;
-  }
-
-  .navbar-brand {
-    align-items: flex-start;
   }
 
   .status-email {
     max-width: 140px;
   }
 
+  /* IMPROVED MOBILE DROPDOWN */
   .nav-menu {
     position: absolute;
-    top: 75px;
-    left: 4px;
-    right: 4px;
-    width: auto;
-    background: rgba(255, 255, 255, 0.75);
+    top: 76px;
+    right: 1px;
+    left: auto;
+    width: 260px;
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     flex-direction: column;
-    padding: 10px;
-    border-radius: 12px;
+    padding: 8px;
+    border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.3s ease;
-    z-index: 998;
+    z-index: 110; /* Higher than navbar, but lower than staff dropdown */
   }
 
   .nav-menu.active {
@@ -188,7 +199,7 @@
   }
 
   .nav-links {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: transparent;
     padding: 10px 16px;
     border-radius: 8px;
     width: 100%;
@@ -199,7 +210,7 @@
   }
 
   .nav-links:hover {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: #f1f5f9;
     color: #4f46e5;
     transform: translateX(5px);
   }

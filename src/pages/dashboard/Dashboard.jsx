@@ -6,7 +6,7 @@ import "./Dashboard.css";
 import { useAppointmentsData } from "../../hooks/appointment/useAppointmentsData";
 import { useAppointmentsFilters } from "../../hooks/appointment/useAppointmentsFilters";
 import { useAppointmentsUI } from "../../hooks/appointment/usApointmentsUI";
-
+import LoadingPage from "../../components/loadingPage/LoadingPage";
 export default function Dashboard() {
   const ui = useAppointmentsUI();
 
@@ -36,13 +36,7 @@ export default function Dashboard() {
     timezone,
   });
 
-  if (loading) {
-    return (
-      <div className="page-wrapper">
-        <div className="table-container">Loading schedule...</div>
-      </div>
-    );
-  }
+  if (loading) return <LoadingPage />;
 
   const isTableView = viewMode === "table";
 
