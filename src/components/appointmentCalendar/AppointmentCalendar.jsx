@@ -25,19 +25,21 @@ export default function AppointmentCalendar({
   const [activeTooltip, setActiveTooltip] = useState(null);
   const freeTimeColor = "#e2e8f0";
 
-  const startOfWeek = moment(selectedDay).startOf("isoWeek");
+  // Default to Monday start if viewing today, otherwise start from selected day
+  const todayStr = moment().format("YYYY-MM-DD");
+  const isDefaultDay = selectedDay === todayStr;
+  const startDay = isDefaultDay
+    ? moment(selectedDay).startOf("isoWeek")
+    : moment(selectedDay);
+
   const weekDays = Array.from({ length: 7 }, (_, i) =>
-    startOfWeek.clone().add(i, "days"),
+    startDay.clone().add(i, "days"),
   );
 
-  // Staff availability
   const weeklyOff = staff?.weeklyOff || [];
   const vacations = staff?.vacations || [];
-
-  // Compute free days for the week
   const weekFreeDays = getWeekFreeDays(weekDays, weeklyOff, vacations);
 
-  // Prepare layout & classification
   const templateSegments = extractTemplateSegments(workingPeriods);
   const normalLayout = createCalendarLayout(
     workingPeriods,
@@ -73,7 +75,6 @@ export default function AppointmentCalendar({
         moment.utc(a.startTime).tz(timezone).format("YYYY-MM-DD") === dayId,
     );
 
-    // CSS class for free days
     const freeDayClass = isStaffFreeDay
       ? freeDayType === "vacation"
         ? "is-vacation"
@@ -82,9 +83,7 @@ export default function AppointmentCalendar({
 
     return (
       <div
-        className={`h-cal-row ${
-          day.isSame(moment(), "day") ? "is-today" : ""
-        } ${freeDayClass}`}
+        className={`h-cal-row ${day.isSame(moment(), "day") ? "is-today" : ""} ${freeDayClass}`}
       >
         <div className="h-cal-day-label">
           <div className="h-cal-day-name">{day.format("ddd")}</div>
@@ -105,9 +104,8 @@ export default function AppointmentCalendar({
               const appStart = moment.utc(app.startTime).tz(timezone);
               const appEnd = moment.utc(app.endTime).tz(timezone);
               const styles = layout.getStyle(appStart, appEnd);
-
-              // Tooltip position based on horizontal placement
               const leftPercent = parseFloat(styles.left) || 0;
+
               const tooltipPosition =
                 leftPercent <= 15
                   ? "right"
@@ -129,7 +127,6 @@ export default function AppointmentCalendar({
                 >
                   <div className="h-cal-appointment">
                     <span className="h-cal-app-name">{app.clientName}</span>
-
                     {styles.duration >= 40 && (
                       <span className="h-cal-app-time">
                         {appStart.format("HH:mm")}-{appEnd.format("HH:mm")}
@@ -162,51 +159,39 @@ export default function AppointmentCalendar({
     >
       {weekDays.map((day) => {
         const dayId = day.format("YYYY-MM-DD");
-
         const isException = exceptionDays.has(dayId);
         const isStaffFreeDay = weekFreeDays.has(dayId);
         const isOff = !normalDays.has(dayId) && !isException;
 
-        // Identify free day type
         let freeDayType = null;
         if (isStaffFreeDay) {
-          const dayKey = getDayKey(day);
-          freeDayType = weeklyOff.includes(dayKey) ? "weeklyOff" : "vacation";
+          freeDayType = weeklyOff.includes(getDayKey(day))
+            ? "weeklyOff"
+            : "vacation";
         }
 
-        // Determine layout signature
         const layoutSignature = getDaySignature(
           day,
           workingPeriods,
           templateSegments,
         );
-
         const isOffDay = layoutSignature === "off" || isStaffFreeDay;
-
         let currentLayout = normalLayout;
 
-        // Override layout for exception days
         if (isException && !isStaffFreeDay) {
-          const dayKey = getDayKey(day);
-          const dayShifts = normalLayout.getShiftsForDay(dayKey);
-
+          const dayShifts = normalLayout.getShiftsForDay(getDayKey(day));
           if (dayShifts.length > 0) {
             currentLayout = createExceptionDayLayout(dayShifts, freeTimeColor);
           }
         }
 
-        // Show header when layout changes
         const shouldShowHeader =
           layoutSignature !== lastLayoutSignature && !isOffDay;
-
-        if (!isOffDay) {
-          lastLayoutSignature = layoutSignature;
-        }
+        if (!isOffDay) lastLayoutSignature = layoutSignature;
 
         return (
           <div key={dayId}>
             {shouldShowHeader && <CalendarHourHeader layout={currentLayout} />}
-
             {renderDayRow(
               day,
               currentLayout,

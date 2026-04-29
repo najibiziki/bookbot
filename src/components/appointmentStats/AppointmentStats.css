@@ -1,0 +1,66 @@
+.stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centered on mobile */
+  gap: 16px;
+  padding: 12px 4px;
+}
+
+/* Desktop layout (stacked in sidebar) */
+@media (min-width: 860px) {
+  .stats-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 0;
+  }
+
+  /* Hide the vertical line | on big screens */
+  .stat-divider {
+    display: none;
+  }
+}
+
+.stat-item {
+  display: flex;
+  align-items: center; /* Better alignment than baseline */
+  gap: 6px;
+  white-space: nowrap; /* Prevents numbers/text from cutting off */
+}
+
+.stat-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #6b7280; /* Changed to match the label color */
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 20px;
+  background-color: #e5e7eb;
+}
+
+@media (max-width: 480px) {
+  .stats-bar {
+    justify-content: center; /* Keep centered on small phones too */
+    padding: 8px 2px;
+    gap: 12px;
+  }
+
+  .stat-number {
+    font-size: 1.1rem;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+  }
+}

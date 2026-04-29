@@ -2,28 +2,45 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import moment from "moment-timezone";
 import API_URL from "../../api";
 
+const getStored = (key, fallback) => {
+  try {
+    const val = localStorage.getItem(key);
+    return val !== null ? val : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 export const useAppointments = (token) => {
-  // ==========================================
-  // STATES
-  // ==========================================
   const [appointments, setAppointments] = useState([]);
   const [timezone, setTimezone] = useState("UTC");
   const [workingPeriods, setWorkingPeriods] = useState(null);
-  const [staffData, setStaffData] = useState([]); // NEW: Full staff array from business
+  const [staffData, setStaffData] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [selectedStaff, setSelectedStaff] = useState(null);
-  const [selectedDay, setSelectedDay] = useState(
-    new Date().toLocaleDateString("en-CA"),
-  );
-  const [viewMode, setViewMode] = useState("calendar");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const dropdownRef = useRef(null);
 
-  // ==========================================
-  // FETCH DATA
-  // ==========================================
+  const [selectedStaff, setSelectedStaff] = useState(() =>
+    getStored("filterStaff", null),
+  );
+  const [selectedDay, setSelectedDay] = useState(() =>
+    getStored("filterDay", new Date().toLocaleDateString("en-CA")),
+  );
+  const [viewMode, setViewMode] = useState(() =>
+    getStored("filterView", "calendar"),
+  );
+
+  useEffect(() => {
+    localStorage.setItem("filterStaff", selectedStaff || "");
+  }, [selectedStaff]);
+  useEffect(() => {
+    localStorage.setItem("filterDay", selectedDay);
+  }, [selectedDay]);
+  useEffect(() => {
+    localStorage.setItem("filterView", viewMode);
+  }, [viewMode]);
+
   useEffect(() => {
     if (!token) return;
 
@@ -48,7 +65,7 @@ export const useAppointments = (token) => {
 
         if (bizRes.ok) {
           setWorkingPeriods(bizData.workingPeriods || null);
-          setStaffData(bizData.staff || []); // NEW: Store staff array
+          setStaffData(bizData.staff || []);
         }
       } catch (err) {
         console.error("Failed to fetch data", err);
@@ -60,44 +77,25 @@ export const useAppointments = (token) => {
     fetchData();
   }, [token]);
 
-  // ==========================================
-  // STAFF LIST (names for dropdown)
-  // ==========================================
   const staffList = useMemo(() => {
     return [...new Set(appointments.map((a) => a.staffName))]
       .filter(Boolean)
       .sort();
   }, [appointments]);
 
-  // ==========================================
-  // GET SELECTED STAFF OBJECT (with weeklyOff & vacations)
-  // ==========================================
   const selectedStaffData = useMemo(() => {
-    if (!selectedStaff || selectedStaff === "all") {
-      return null;
-    }
-
-    // Find staff by name from the business staff array
+    if (!selectedStaff || selectedStaff === "all") return null;
     return staffData.find((s) => s.name === selectedStaff) || null;
   }, [selectedStaff, staffData]);
 
-  // ==========================================
-  // SET DEFAULT STAFF (first one)
-  // ==========================================
+  const isCalendarDisabled = selectedStaff === "all";
+
   useEffect(() => {
     if (staffList.length > 0 && selectedStaff === null) {
       setSelectedStaff(staffList[0]);
     }
   }, [staffList, selectedStaff]);
 
-  // ==========================================
-  // DERIVED VALUES
-  // ==========================================
-  const isCalendarDisabled = selectedStaff === "all";
-
-  // ==========================================
-  // FILTER & SORT APPOINTMENTS
-  // ==========================================
   const sortedAppointments = useMemo(() => {
     if (!selectedStaff) return [];
 
@@ -123,17 +121,28 @@ export const useAppointments = (token) => {
     );
   }, [appointments, selectedStaff, selectedDay, timezone]);
 
-  // ==========================================
-  // HANDLERS
-  // ==========================================
+  const weekAppointments = useMemo(() => {
+    if (!selectedStaff) return 0;
+
+    const byStaff =
+      selectedStaff === "all"
+        ? appointments
+        : appointments.filter((a) => a.staffName === selectedStaff);
+
+    const start = moment(selectedDay).startOf("day");
+    const end = moment(selectedDay).add(6, "days").endOf("day");
+
+    return byStaff.filter((a) => {
+      const date = moment.utc(a.startTime).tz(timezone);
+      return date.isSameOrAfter(start) && date.isSameOrBefore(end);
+    }).length;
+  }, [appointments, selectedStaff, selectedDay, timezone]);
+
   const handleSelect = (staff) => {
     setSelectedStaff(staff);
     setIsDropdownOpen(false);
   };
 
-  // ==========================================
-  // SIDE EFFECTS
-  // ==========================================
   useEffect(() => {
     if (isCalendarDisabled && viewMode === "calendar") {
       setViewMode("table");
@@ -150,15 +159,13 @@ export const useAppointments = (token) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ==========================================
-  // RETURN
-  // ==========================================
   return {
     loading,
     timezone,
     workingPeriods,
     staffList,
     sortedAppointments,
+    weekAppointments,
     selectedStaff,
     setSelectedStaff,
     selectedStaffData,
