@@ -80,12 +80,12 @@
   padding: 0 5px;
   box-sizing: border-box;
   overflow: hidden;
-  background: #03297a; /* Your App Blue */
+  background: #03297a;
   transition: all 0.2s ease;
 }
 
 .h-cal-appointment-wrapper:hover .h-cal-appointment {
-  background: #03297a; /* Slightly darker blue on hover */
+  background: #03297a;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
@@ -128,6 +128,7 @@
     font-size: 0.3rem;
     font-weight: 300;
   }
+
   .h-cal-app-time {
     display: none;
   }
