@@ -1,9 +1,6 @@
-/* =========================
-   MICRO TOOLTIP (BASE)
-========================= */
 .h-cal-tooltip {
   position: absolute;
-  bottom: calc(100% + 6px);
+  bottom: calc(100% + 4px);
   background: #111827;
   padding: 3px 6px;
   border-radius: 4px;
@@ -16,24 +13,18 @@
   gap: 6px;
 }
 
-/* =========================
-   THE PERFECT POINTER (Reads React Variables)
-========================= */
 .h-cal-tooltip::after {
   content: "";
   position: absolute;
   top: 100%;
-  left: var(--arrow-left, 50%); /* React controls this */
-  right: var(--arrow-right, auto); /* React controls this */
-  transform: var(--arrow-transform, translateX(-50%)); /* React controls this */
+  left: var(--arrow-left, 50%);
+  right: var(--arrow-right, auto);
+  transform: var(--arrow-transform, translateX(-50%));
   border-width: 5px 5px 0 5px;
   border-style: solid;
   border-color: #111827 transparent transparent transparent;
 }
 
-/* =========================
-   TEXT & DETAILS
-========================= */
 .h-cal-tooltip-info {
   display: flex;
   flex-direction: column;
@@ -60,9 +51,6 @@
   background-color: #4b5563;
 }
 
-/* =========================
-   MICRO-BUTTONS
-========================= */
 .h-cal-tooltip-actions {
   display: flex;
   gap: 3px;
@@ -80,17 +68,19 @@
 .h-cal-tooltip-actions .icon-call {
   color: #60a5fa;
 }
+
 .h-cal-tooltip-actions .icon-call:hover {
-  background-color: #1e3a5f;
-  border-color: #60a5fa;
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
 }
 
 .h-cal-tooltip-actions .icon-wa {
   color: #4ade80;
 }
+
 .h-cal-tooltip-actions .icon-wa:hover {
-  background-color: #14532d;
-  border-color: #4ade80;
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
 }
 
 .h-cal-tooltip-actions .icon-btn svg {

@@ -19,8 +19,8 @@ export default function AppointmentCalendar({
   timezone,
   workingPeriods,
 }) {
-  const freeTimeColor = "#e2e8f0";
   const [activeTooltip, setActiveTooltip] = useState(null);
+  const freeTimeColor = "#e2e8f0";
 
   const startOfWeek = moment(selectedDay).startOf("isoWeek");
   const weekDays = Array.from({ length: 7 }, (_, i) =>
@@ -34,11 +34,22 @@ export default function AppointmentCalendar({
     freeTimeColor,
   );
   const rawTemplate = extractTemplateSegments(workingPeriods);
-  const { normalDays, exceptionDays } = classifyWeekDays(
+  const { exceptionDays } = classifyWeekDays(
     weekDays,
     workingPeriods,
     rawTemplate,
   );
+
+  if (normalLayout.isFullyEmpty) {
+    return (
+      <div
+        className="h-calendar-container"
+        style={{ padding: 20, textAlign: "center", color: "#9ca3af" }}
+      >
+        No working hours set
+      </div>
+    );
+  }
 
   const renderDayRow = (day, layout) => {
     const dayKey = getDayKey(day);
@@ -67,22 +78,18 @@ export default function AppointmentCalendar({
             backgroundColor: isOff ? freeTimeColor : "transparent",
           }}
         >
-          {dayApps.map((app, index) => {
+          {dayApps.map((app) => {
             const appStart = moment.utc(app.startTime).tz(timezone);
             const appEnd = moment.utc(app.endTime).tz(timezone);
             const styles = layout.getStyle(appStart, appEnd);
 
-            // FOOLPROOF POSITIONING BASED ON PHYSICAL LOCATION
             const leftPercent = parseFloat(styles.left) || 0;
-            let tooltipPosition = "center";
-
-            if (leftPercent <= 15) {
-              // Block is on the far left edge -> stretch popup to the right
-              tooltipPosition = "right";
-            } else if (leftPercent >= 75) {
-              // Block is on the far right edge -> stretch popup to the left
-              tooltipPosition = "left";
-            }
+            const tooltipPosition =
+              leftPercent <= 15
+                ? "right"
+                : leftPercent >= 75
+                  ? "left"
+                  : "center";
 
             return (
               <div
@@ -119,17 +126,6 @@ export default function AppointmentCalendar({
     );
   };
 
-  if (normalLayout.isFullyEmpty) {
-    return (
-      <div
-        className="h-calendar-container"
-        style={{ padding: 20, textAlign: "center", color: "#9ca3af" }}
-      >
-        No working hours set
-      </div>
-    );
-  }
-
   let lastLayoutSignature = null;
 
   return (
@@ -142,6 +138,7 @@ export default function AppointmentCalendar({
         const isException = exceptionDays.has(dayId);
         const layoutSignature = getDaySignature(day, workingPeriods);
         const isOffDay = layoutSignature === "off";
+
         let currentLayout = normalLayout;
 
         if (isException) {

@@ -1,6 +1,3 @@
-/* =========================
-   CALENDAR CONTAINER
-========================= */
 .h-calendar-container {
   display: flex;
   flex-direction: column;
@@ -10,20 +7,14 @@
   padding: 0 3px 20px 3px;
 }
 
-/* =========================
-   ROW LAYOUT
-========================= */
 .h-cal-row {
   display: flex;
   gap: 8px;
   align-items: flex-end;
   position: relative;
-  z-index: 20; /* Keeps popups above the header */
+  z-index: 20;
 }
 
-/* =========================
-   DAY LABEL
-========================= */
 .h-cal-day-label {
   width: 38px;
   height: 28px;
@@ -59,9 +50,6 @@
   line-height: 1.1;
 }
 
-/* =========================
-   TIME TRACK
-========================= */
 .h-cal-time-track {
   flex-grow: 1;
   position: relative;
@@ -73,9 +61,6 @@
   overflow: visible;
 }
 
-/* =========================
-   APPOINTMENTS
-========================= */
 .h-cal-appointment-wrapper {
   position: absolute;
   top: 0;
@@ -95,19 +80,13 @@
   padding: 0 5px;
   box-sizing: border-box;
   overflow: hidden;
-  background: linear-gradient(
-    90deg,
-    #111827 0%,
-    #0d4a3a 25%,
-    #047857 60%,
-    #10b981 100%
-  );
+  background: #4f46e5;
   transition: all 0.2s ease;
 }
 
 .h-cal-appointment-wrapper:hover .h-cal-appointment {
-  background: linear-gradient(90deg, #111827 0%, #065f46 40%, #059669 100%);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  background: #4338ca;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .h-cal-app-name {
@@ -119,7 +98,6 @@
   text-overflow: ellipsis;
   max-width: 100%;
   line-height: 1.1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .h-cal-app-time {
@@ -131,9 +109,6 @@
   flex-shrink: 0;
 }
 
-/* =========================
-   MOBILE STYLES
-========================= */
 @media (max-width: 480px) {
   .h-cal-day-label {
     width: 32px;
@@ -149,7 +124,6 @@
     font-size: 0.6rem;
   }
 
-  /* Hide inline text on mobile, rely on popup */
   .h-cal-app-name,
   .h-cal-app-time {
     display: none;

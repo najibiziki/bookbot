@@ -1,4 +1,3 @@
-import React from "react";
 import "./AppointmentTooltip.css";
 import CallButton from "../buttons/CallButton";
 import WhatsAppButton from "../buttons/WhatsAppButton";
@@ -9,11 +8,9 @@ export default function AppointmentTooltip({
   appEnd,
   position = "center",
 }) {
-  // BULLETPROOF INLINE STYLES + CSS VARIABLES FOR THE ARROW
   let tooltipStyle = {};
 
   if (position === "left") {
-    // Lock right edge to block, stretch out to the LEFT
     tooltipStyle = {
       right: "0",
       left: "auto",
@@ -23,7 +20,6 @@ export default function AppointmentTooltip({
       "--arrow-transform": "none",
     };
   } else if (position === "right") {
-    // Lock left edge to block, stretch out to the RIGHT
     tooltipStyle = {
       left: "0",
       right: "auto",
@@ -33,7 +29,6 @@ export default function AppointmentTooltip({
       "--arrow-transform": "none",
     };
   } else {
-    // Stay centered on the block
     tooltipStyle = {
       left: "50%",
       transform: "translateX(-50%)",
@@ -46,13 +41,13 @@ export default function AppointmentTooltip({
   return (
     <div
       className="h-cal-tooltip"
-      style={tooltipStyle} // Injects all positioning directly into HTML
+      style={tooltipStyle}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="h-cal-tooltip-info">
         <div className="h-cal-tooltip-name">{app.clientName}</div>
         <div className="h-cal-tooltip-time">
-          {appStart.format("HH:mm")}-{appEnd.format("HH:mm")} • ${" "}
+          {appStart.format("HH:mm")}-{appEnd.format("HH:mm")} | $
           {app.totalPrice}
         </div>
       </div>
