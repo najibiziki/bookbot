@@ -90,8 +90,8 @@
 }
 
 .h-cal-app-name {
-  font-size: 0.4rem;
-  font-weight: 400;
+  font-size: 0.5rem;
+  font-weight: 700;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
@@ -101,11 +101,11 @@
 }
 
 .h-cal-app-time {
-  font-size: 0.4rem;
-  font-weight: 400;
+  font-size: 0.45rem;
+  font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
   white-space: nowrap;
-  line-height: 2;
+  line-height: 1;
   flex-shrink: 0;
 }
 
@@ -124,7 +124,10 @@
     font-size: 0.6rem;
   }
 
-  /* .h-cal-app-name, */
+  .h-cal-app-name {
+    font-size: 0.3rem;
+    font-weight: 300;
+  }
   .h-cal-app-time {
     display: none;
   }
