@@ -4,10 +4,12 @@ import "./AppointmentCalendar.css";
 
 import {
   createCalendarLayout,
+  createExceptionDayLayout,
   classifyWeekDays,
   getDaySignature,
   extractTemplateSegments,
   getDayKey,
+  getWeekFreeDays,
 } from "../../utils/calendarLogic";
 
 import CalendarHourHeader from "../calendarHeader/CalendarHourHeader";
@@ -18,6 +20,7 @@ export default function AppointmentCalendar({
   selectedDay,
   timezone,
   workingPeriods,
+  staff = null,
 }) {
   const [activeTooltip, setActiveTooltip] = useState(null);
   const freeTimeColor = "#e2e8f0";
@@ -27,17 +30,25 @@ export default function AppointmentCalendar({
     startOfWeek.clone().add(i, "days"),
   );
 
-  const selectedDayKey = getDayKey(moment(selectedDay));
+  // Staff availability
+  const weeklyOff = staff?.weeklyOff || [];
+  const vacations = staff?.vacations || [];
+
+  // Compute free days for the week
+  const weekFreeDays = getWeekFreeDays(weekDays, weeklyOff, vacations);
+
+  // Prepare layout & classification
+  const templateSegments = extractTemplateSegments(workingPeriods);
   const normalLayout = createCalendarLayout(
     workingPeriods,
-    selectedDayKey,
+    getDayKey(moment(selectedDay)),
     freeTimeColor,
   );
-  const rawTemplate = extractTemplateSegments(workingPeriods);
-  const { exceptionDays } = classifyWeekDays(
+
+  const { normalDays, exceptionDays } = classifyWeekDays(
     weekDays,
     workingPeriods,
-    rawTemplate,
+    templateSegments,
   );
 
   if (normalLayout.isFullyEmpty) {
@@ -51,10 +62,10 @@ export default function AppointmentCalendar({
     );
   }
 
-  const renderDayRow = (day, layout) => {
+  const renderDayRow = (day, layout, isOff, isStaffFreeDay, freeDayType) => {
     const dayKey = getDayKey(day);
     const dayShifts = layout.getShiftsForDay(dayKey);
-    const isOff = !dayShifts.length;
+    const isFullyOff = !dayShifts.length || isStaffFreeDay;
     const dayId = day.format("YYYY-MM-DD");
 
     const dayApps = appointments.filter(
@@ -62,9 +73,18 @@ export default function AppointmentCalendar({
         moment.utc(a.startTime).tz(timezone).format("YYYY-MM-DD") === dayId,
     );
 
+    // CSS class for free days
+    const freeDayClass = isStaffFreeDay
+      ? freeDayType === "vacation"
+        ? "is-vacation"
+        : "is-weekly-off"
+      : "";
+
     return (
       <div
-        className={`h-cal-row ${day.isSame(moment(), "day") ? "is-today" : ""}`}
+        className={`h-cal-row ${
+          day.isSame(moment(), "day") ? "is-today" : ""
+        } ${freeDayClass}`}
       >
         <div className="h-cal-day-label">
           <div className="h-cal-day-name">{day.format("ddd")}</div>
@@ -74,53 +94,60 @@ export default function AppointmentCalendar({
         <div
           className="h-cal-time-track"
           style={{
-            backgroundImage: layout.buildBackground(dayShifts),
-            backgroundColor: isOff ? freeTimeColor : "transparent",
+            backgroundImage: isFullyOff
+              ? "none"
+              : layout.buildBackground(dayShifts),
+            backgroundColor: isFullyOff ? freeTimeColor : "transparent",
           }}
         >
-          {dayApps.map((app) => {
-            const appStart = moment.utc(app.startTime).tz(timezone);
-            const appEnd = moment.utc(app.endTime).tz(timezone);
-            const styles = layout.getStyle(appStart, appEnd);
+          {!isFullyOff &&
+            dayApps.map((app) => {
+              const appStart = moment.utc(app.startTime).tz(timezone);
+              const appEnd = moment.utc(app.endTime).tz(timezone);
+              const styles = layout.getStyle(appStart, appEnd);
 
-            const leftPercent = parseFloat(styles.left) || 0;
-            const tooltipPosition =
-              leftPercent <= 15
-                ? "right"
-                : leftPercent >= 75
-                  ? "left"
-                  : "center";
+              // Tooltip position based on horizontal placement
+              const leftPercent = parseFloat(styles.left) || 0;
+              const tooltipPosition =
+                leftPercent <= 15
+                  ? "right"
+                  : leftPercent >= 75
+                    ? "left"
+                    : "center";
 
-            return (
-              <div
-                key={app._id}
-                className="h-cal-appointment-wrapper"
-                style={{ left: styles.left, width: styles.width }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveTooltip(activeTooltip === app._id ? null : app._id);
-                }}
-              >
-                <div className="h-cal-appointment">
-                  <span className="h-cal-app-name">{app.clientName}</span>
-                  {styles.duration >= 40 && (
-                    <span className="h-cal-app-time">
-                      {appStart.format("HH:mm")}-{appEnd.format("HH:mm")}
-                    </span>
+              return (
+                <div
+                  key={app._id}
+                  className="h-cal-appointment-wrapper"
+                  style={{ left: styles.left, width: styles.width }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveTooltip(
+                      activeTooltip === app._id ? null : app._id,
+                    );
+                  }}
+                >
+                  <div className="h-cal-appointment">
+                    <span className="h-cal-app-name">{app.clientName}</span>
+
+                    {styles.duration >= 40 && (
+                      <span className="h-cal-app-time">
+                        {appStart.format("HH:mm")}-{appEnd.format("HH:mm")}
+                      </span>
+                    )}
+                  </div>
+
+                  {activeTooltip === app._id && (
+                    <AppointmentTooltip
+                      app={app}
+                      appStart={appStart}
+                      appEnd={appEnd}
+                      position={tooltipPosition}
+                    />
                   )}
                 </div>
-
-                {activeTooltip === app._id && (
-                  <AppointmentTooltip
-                    app={app}
-                    appStart={appStart}
-                    appEnd={appEnd}
-                    position={tooltipPosition}
-                  />
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     );
@@ -135,29 +162,58 @@ export default function AppointmentCalendar({
     >
       {weekDays.map((day) => {
         const dayId = day.format("YYYY-MM-DD");
+
         const isException = exceptionDays.has(dayId);
-        const layoutSignature = getDaySignature(day, workingPeriods);
-        const isOffDay = layoutSignature === "off";
+        const isStaffFreeDay = weekFreeDays.has(dayId);
+        const isOff = !normalDays.has(dayId) && !isException;
+
+        // Identify free day type
+        let freeDayType = null;
+        if (isStaffFreeDay) {
+          const dayKey = getDayKey(day);
+          freeDayType = weeklyOff.includes(dayKey) ? "weeklyOff" : "vacation";
+        }
+
+        // Determine layout signature
+        const layoutSignature = getDaySignature(
+          day,
+          workingPeriods,
+          templateSegments,
+        );
+
+        const isOffDay = layoutSignature === "off" || isStaffFreeDay;
 
         let currentLayout = normalLayout;
 
-        if (isException) {
+        // Override layout for exception days
+        if (isException && !isStaffFreeDay) {
           const dayKey = getDayKey(day);
-          currentLayout = createCalendarLayout(
-            { [dayKey]: workingPeriods[dayKey] },
-            dayKey,
-            freeTimeColor,
-          );
+          const dayShifts = normalLayout.getShiftsForDay(dayKey);
+
+          if (dayShifts.length > 0) {
+            currentLayout = createExceptionDayLayout(dayShifts, freeTimeColor);
+          }
         }
 
+        // Show header when layout changes
         const shouldShowHeader =
           layoutSignature !== lastLayoutSignature && !isOffDay;
-        lastLayoutSignature = layoutSignature;
+
+        if (!isOffDay) {
+          lastLayoutSignature = layoutSignature;
+        }
 
         return (
           <div key={dayId}>
             {shouldShowHeader && <CalendarHourHeader layout={currentLayout} />}
-            {renderDayRow(day, currentLayout)}
+
+            {renderDayRow(
+              day,
+              currentLayout,
+              isOff,
+              isStaffFreeDay,
+              freeDayType,
+            )}
           </div>
         );
       })}

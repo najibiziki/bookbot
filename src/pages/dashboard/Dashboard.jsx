@@ -16,6 +16,7 @@ export default function Dashboard() {
     sortedAppointments,
     selectedStaff,
     setSelectedStaff,
+    selectedStaffData,
     selectedDay,
     setSelectedDay,
     viewMode,
@@ -59,6 +60,7 @@ export default function Dashboard() {
               selectedDay={selectedDay}
               timezone={timezone}
               workingPeriods={workingPeriods}
+              staff={selectedStaffData}
             />
           )}
         </div>

@@ -9,6 +9,7 @@ export const useAppointments = (token) => {
   const [appointments, setAppointments] = useState([]);
   const [timezone, setTimezone] = useState("UTC");
   const [workingPeriods, setWorkingPeriods] = useState(null);
+  const [staffData, setStaffData] = useState([]); // NEW: Full staff array from business
   const [loading, setLoading] = useState(true);
 
   const [selectedStaff, setSelectedStaff] = useState(null);
@@ -47,6 +48,7 @@ export const useAppointments = (token) => {
 
         if (bizRes.ok) {
           setWorkingPeriods(bizData.workingPeriods || null);
+          setStaffData(bizData.staff || []); // NEW: Store staff array
         }
       } catch (err) {
         console.error("Failed to fetch data", err);
@@ -59,13 +61,25 @@ export const useAppointments = (token) => {
   }, [token]);
 
   // ==========================================
-  // STAFF LIST
+  // STAFF LIST (names for dropdown)
   // ==========================================
   const staffList = useMemo(() => {
     return [...new Set(appointments.map((a) => a.staffName))]
       .filter(Boolean)
       .sort();
   }, [appointments]);
+
+  // ==========================================
+  // GET SELECTED STAFF OBJECT (with weeklyOff & vacations)
+  // ==========================================
+  const selectedStaffData = useMemo(() => {
+    if (!selectedStaff || selectedStaff === "all") {
+      return null;
+    }
+
+    // Find staff by name from the business staff array
+    return staffData.find((s) => s.name === selectedStaff) || null;
+  }, [selectedStaff, staffData]);
 
   // ==========================================
   // SET DEFAULT STAFF (first one)
@@ -147,6 +161,7 @@ export const useAppointments = (token) => {
     sortedAppointments,
     selectedStaff,
     setSelectedStaff,
+    selectedStaffData,
     selectedDay,
     setSelectedDay,
     viewMode,
