@@ -14,8 +14,6 @@
 .table-wrapper {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-
-  /* Hide scrollbar but keep swipe ability (Matches calendar style) */
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -31,7 +29,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.72rem;
-  min-width: 440px; /* Forces horizontal scroll on small screens */
+  min-width: 440px;
 }
 
 .appt-table thead th {
@@ -55,7 +53,6 @@
 /* =========================
    COLUMN STYLES
 ========================= */
-/* Date Column */
 .date-line1 {
   font-weight: 700;
   font-size: 0.75rem;
@@ -68,7 +65,6 @@
   color: #777;
 }
 
-/* Client & Staff Column */
 .client-name {
   font-weight: 600;
   font-size: 0.72rem;
@@ -81,10 +77,9 @@
   color: #999;
 }
 
-/* Service Column */
 .svc-line1 {
-  display: inline-block; /* ADDED: Allows the box to be centered */
-  text-align: center; /* ADDED: Centers text inside the 120px box */
+  display: inline-block;
+  text-align: center;
   font-weight: 600;
   font-size: 0.72rem;
   color: #333;
@@ -96,7 +91,7 @@
 }
 
 .svc-line2 {
-  text-align: center; /* ADDED: Ensures price/duration is centered */
+  text-align: center;
   font-size: 0.65rem;
   color: #666;
   white-space: nowrap;
@@ -119,36 +114,4 @@
   display: flex;
   gap: 8px;
   justify-content: center;
-}
-/* =========================
-   ACTION ICONS
-========================= */
-.icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  background-color: transparent;
-  border: 1px solid rgb(50, 49, 49); /* Fixed duplicate border property */
-  border-radius: 5px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.icon-call {
-  color: #2563eb;
-}
-
-.icon-call:hover {
-  background-color: #eff6ff;
-}
-
-.icon-wa {
-  color: #16a34a;
-}
-
-.icon-wa:hover {
-  background-color: #f0fdf4;
 }

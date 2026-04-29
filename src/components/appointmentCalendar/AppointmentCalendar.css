@@ -6,9 +6,8 @@
   flex-direction: column;
   gap: 5px;
   width: 100%;
-  box-sizing: border-box; /* Ensures padding doesn't break width */
+  box-sizing: border-box;
   padding: 0 3px 20px 3px;
-  /* overflow-x removed - parent .table-container handles scrolling safely */
 }
 
 /* =========================
@@ -18,6 +17,8 @@
   display: flex;
   gap: 8px;
   align-items: flex-end;
+  position: relative;
+  z-index: 20; /* Keeps popups above the header */
 }
 
 /* =========================
@@ -69,16 +70,24 @@
   background-size: 100% 100%;
   border: none;
   box-shadow: none;
-  overflow: visible; /* Allows appointment blocks to sit cleanly */
+  overflow: visible;
 }
 
 /* =========================
-   APPOINTMENT BLOCK
+   APPOINTMENTS
 ========================= */
-.h-cal-appointment {
+.h-cal-appointment-wrapper {
   position: absolute;
   top: 0;
   height: 100%;
+  z-index: 5;
+  cursor: pointer;
+}
+
+.h-cal-appointment {
+  position: relative;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -86,8 +95,6 @@
   padding: 0 5px;
   box-sizing: border-box;
   overflow: hidden;
-  z-index: 5;
-  cursor: default;
   background: linear-gradient(
     90deg,
     #111827 0%,
@@ -98,14 +105,11 @@
   transition: all 0.2s ease;
 }
 
-.h-cal-appointment:hover {
+.h-cal-appointment-wrapper:hover .h-cal-appointment {
   background: linear-gradient(90deg, #111827 0%, #065f46 40%, #059669 100%);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* =========================
-   APPOINTMENT TEXT
-========================= */
 .h-cal-app-name {
   font-size: 0.5rem;
   font-weight: 700;
@@ -145,7 +149,7 @@
     font-size: 0.6rem;
   }
 
-  /* Hide text on tiny screens, show only colored blocks */
+  /* Hide inline text on mobile, rely on popup */
   .h-cal-app-name,
   .h-cal-app-time {
     display: none;

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import moment from "moment-timezone";
 import "./AppointmentCalendar.css";
 
@@ -10,6 +11,7 @@ import {
 } from "../../utils/calendarLogic";
 
 import CalendarHourHeader from "../calendarHeader/CalendarHourHeader";
+import AppointmentTooltip from "./AppointmentTooltip";
 
 export default function AppointmentCalendar({
   appointments,
@@ -18,23 +20,20 @@ export default function AppointmentCalendar({
   workingPeriods,
 }) {
   const freeTimeColor = "#e2e8f0";
+  const [activeTooltip, setActiveTooltip] = useState(null);
 
   const startOfWeek = moment(selectedDay).startOf("isoWeek");
-
   const weekDays = Array.from({ length: 7 }, (_, i) =>
     startOfWeek.clone().add(i, "days"),
   );
 
   const selectedDayKey = getDayKey(moment(selectedDay));
-
   const normalLayout = createCalendarLayout(
     workingPeriods,
     selectedDayKey,
     freeTimeColor,
   );
-
   const rawTemplate = extractTemplateSegments(workingPeriods);
-
   const { normalDays, exceptionDays } = classifyWeekDays(
     weekDays,
     workingPeriods,
@@ -45,7 +44,6 @@ export default function AppointmentCalendar({
     const dayKey = getDayKey(day);
     const dayShifts = layout.getShiftsForDay(dayKey);
     const isOff = !dayShifts.length;
-
     const dayId = day.format("YYYY-MM-DD");
 
     const dayApps = appointments.filter(
@@ -69,29 +67,49 @@ export default function AppointmentCalendar({
             backgroundColor: isOff ? freeTimeColor : "transparent",
           }}
         >
-          {dayApps.map((app) => {
+          {dayApps.map((app, index) => {
             const appStart = moment.utc(app.startTime).tz(timezone);
             const appEnd = moment.utc(app.endTime).tz(timezone);
             const styles = layout.getStyle(appStart, appEnd);
 
+            // FOOLPROOF POSITIONING BASED ON PHYSICAL LOCATION
+            const leftPercent = parseFloat(styles.left) || 0;
+            let tooltipPosition = "center";
+
+            if (leftPercent <= 15) {
+              // Block is on the far left edge -> stretch popup to the right
+              tooltipPosition = "right";
+            } else if (leftPercent >= 75) {
+              // Block is on the far right edge -> stretch popup to the left
+              tooltipPosition = "left";
+            }
+
             return (
               <div
                 key={app._id}
-                className="h-cal-appointment"
-                style={{
-                  left: styles.left,
-                  width: styles.width,
+                className="h-cal-appointment-wrapper"
+                style={{ left: styles.left, width: styles.width }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveTooltip(activeTooltip === app._id ? null : app._id);
                 }}
-                title={`${app.clientName} | ${appStart.format(
-                  "HH:mm",
-                )} - ${appEnd.format("HH:mm")}`}
               >
-                <span className="h-cal-app-name">{app.clientName}</span>
+                <div className="h-cal-appointment">
+                  <span className="h-cal-app-name">{app.clientName}</span>
+                  {styles.duration >= 40 && (
+                    <span className="h-cal-app-time">
+                      {appStart.format("HH:mm")}-{appEnd.format("HH:mm")}
+                    </span>
+                  )}
+                </div>
 
-                {styles.duration >= 40 && (
-                  <span className="h-cal-app-time">
-                    {appStart.format("HH:mm")}-{appEnd.format("HH:mm")}
-                  </span>
+                {activeTooltip === app._id && (
+                  <AppointmentTooltip
+                    app={app}
+                    appStart={appStart}
+                    appEnd={appEnd}
+                    position={tooltipPosition}
+                  />
                 )}
               </div>
             );
@@ -105,11 +123,7 @@ export default function AppointmentCalendar({
     return (
       <div
         className="h-calendar-container"
-        style={{
-          padding: 20,
-          textAlign: "center",
-          color: "#9ca3af",
-        }}
+        style={{ padding: 20, textAlign: "center", color: "#9ca3af" }}
       >
         No working hours set
       </div>
@@ -119,19 +133,19 @@ export default function AppointmentCalendar({
   let lastLayoutSignature = null;
 
   return (
-    <div className="h-calendar-container">
+    <div
+      className="h-calendar-container"
+      onClick={() => setActiveTooltip(null)}
+    >
       {weekDays.map((day) => {
         const dayId = day.format("YYYY-MM-DD");
         const isException = exceptionDays.has(dayId);
-
         const layoutSignature = getDaySignature(day, workingPeriods);
         const isOffDay = layoutSignature === "off";
-
         let currentLayout = normalLayout;
 
         if (isException) {
           const dayKey = getDayKey(day);
-
           currentLayout = createCalendarLayout(
             { [dayKey]: workingPeriods[dayKey] },
             dayKey,
@@ -141,7 +155,6 @@ export default function AppointmentCalendar({
 
         const shouldShowHeader =
           layoutSignature !== lastLayoutSignature && !isOffDay;
-
         lastLayoutSignature = layoutSignature;
 
         return (

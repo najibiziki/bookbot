@@ -1,0 +1,54 @@
+/* =========================
+   BASE BUTTON SHAPE
+========================= */
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: transparent;
+  border: 1px solid rgb(50, 49, 49);
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* =========================
+   CALL SPECIFIC STYLES
+========================= */
+.icon-call {
+  color: #2563eb;
+}
+
+.icon-call:hover {
+  background-color: #eff6ff;
+}
+/* =========================
+   BASE BUTTON SHAPE
+========================= */
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: transparent;
+  border: 1px solid rgb(50, 49, 49);
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* =========================
+   WHATSAPP SPECIFIC STYLES
+========================= */
+.icon-wa {
+  color: #16a34a;
+}
+
+.icon-wa:hover {
+  background-color: #f0fdf4;
+}

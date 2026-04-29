@@ -1,50 +1,37 @@
 import FilterBar from "../../components/filterBar/FilterBar";
 import AppointmentTable from "../../components/appointmentTable/AppointmentTable";
 import AppointmentCalendar from "../../components/appointmentCalendar/AppointmentCalendar";
+import LoadingPage from "../../components/loadingPage/LoadingPage";
+import { useAppointments } from "../../hooks/appointment/useAppointments";
 import "./Dashboard.css";
 
-import { useAppointmentsData } from "../../hooks/appointment/useAppointmentsData";
-import { useAppointmentsFilters } from "../../hooks/appointment/useAppointmentsFilters";
-import { useAppointmentsUI } from "../../hooks/appointment/usApointmentsUI";
-import LoadingPage from "../../components/loadingPage/LoadingPage";
 export default function Dashboard() {
-  const ui = useAppointmentsUI();
+  const token = JSON.parse(localStorage.getItem("userInfo"))?.token;
 
   const {
+    loading,
+    timezone,
+    workingPeriods,
+    staffList,
+    sortedAppointments,
     selectedStaff,
+    setSelectedStaff,
     selectedDay,
+    setSelectedDay,
     viewMode,
     setViewMode,
     isDropdownOpen,
     setIsDropdownOpen,
     dropdownRef,
-    setSelectedStaff,
-    setSelectedDay,
     isCalendarDisabled,
     handleSelect,
-  } = ui;
-
-  const token = JSON.parse(localStorage.getItem("userInfo"))?.token;
-
-  const { appointments, timezone, workingPeriods, loading } =
-    useAppointmentsData(token);
-
-  const { staffList, sortedAppointments } = useAppointmentsFilters({
-    appointments,
-    selectedStaff,
-    selectedDay,
-    timezone,
-  });
+  } = useAppointments(token);
 
   if (loading) return <LoadingPage />;
 
-  const isTableView = viewMode === "table";
-
   return (
     <div className="page-wrapper">
-      {/* NEW WRAPPER FOR GRID LAYOUT */}
       <div className="layout-grid">
-        {/* 1. FILTERBAR (Now sits next to the table on big screens) */}
         <FilterBar
           staffList={staffList}
           selectedStaff={selectedStaff}
@@ -60,9 +47,8 @@ export default function Dashboard() {
           isCalendarDisabled={isCalendarDisabled}
         />
 
-        {/* 2. TABLE/CALENDAR CONTAINER */}
         <div className="table-container">
-          {isTableView ? (
+          {viewMode === "table" ? (
             <AppointmentTable
               appointments={sortedAppointments}
               timezone={timezone}
