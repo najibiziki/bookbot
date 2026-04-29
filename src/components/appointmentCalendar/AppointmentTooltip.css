@@ -1,13 +1,13 @@
 .h-cal-tooltip {
   position: absolute;
   bottom: calc(100% + 4px);
-  background: #111827;
+  background: #1e293b; /* Deeper Slate for the Popup */
   padding: 3px 6px;
   border-radius: 4px;
   white-space: nowrap;
   z-index: 100;
   pointer-events: auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Clean dark shadow */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -22,7 +22,7 @@
   transform: var(--arrow-transform, translateX(-50%));
   border-width: 5px 5px 0 5px;
   border-style: solid;
-  border-color: #111827 transparent transparent transparent;
+  border-color: #1e293b transparent transparent transparent; /* Match deeper slate */
 }
 
 .h-cal-tooltip-info {
@@ -34,21 +34,21 @@
 .h-cal-tooltip-name {
   font-size: 0.6rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #f1f5f9; /* Off-white for perfect readability */
   line-height: 1.2;
 }
 
 .h-cal-tooltip-time {
   font-size: 0.5rem;
   font-weight: 700;
-  color: #d1d5db;
+  color: #94a3b8; /* Soft grey for secondary info */
   line-height: 1.2;
 }
 
 .h-cal-tooltip-divider {
   width: 1px;
   height: 18px;
-  background-color: #4b5563;
+  background-color: #334155; /* Subtle slate divider */
 }
 
 .h-cal-tooltip-actions {
@@ -59,28 +59,29 @@
 .h-cal-tooltip-actions .icon-btn {
   width: 18px;
   height: 18px;
-  border: 1px solid #4b5563;
-  background-color: #1f2937;
+  border: 1px solid #475569;
+  background-color: #1e293b; /* Matches the block color underneath */
   border-radius: 4px;
   transition: all 0.2s ease;
 }
 
+/* RESTORED BRAND COLORS - They look incredible on dark backgrounds */
 .h-cal-tooltip-actions .icon-call {
-  color: #60a5fa;
+  color: #60a5fa; /* Blue */
 }
 
 .h-cal-tooltip-actions .icon-call:hover {
-  background-color: #e5e7eb;
-  border-color: #9ca3af;
+  background-color: #1e3a5f;
+  border-color: #60a5fa;
 }
 
 .h-cal-tooltip-actions .icon-wa {
-  color: #4ade80;
+  color: #4ade80; /* Green */
 }
 
 .h-cal-tooltip-actions .icon-wa:hover {
-  background-color: #e5e7eb;
-  border-color: #9ca3af;
+  background-color: #14532d;
+  border-color: #4ade80;
 }
 
 .h-cal-tooltip-actions .icon-btn svg {
