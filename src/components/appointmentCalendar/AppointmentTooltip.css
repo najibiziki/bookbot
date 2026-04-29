@@ -1,13 +1,13 @@
 .h-cal-tooltip {
   position: absolute;
   bottom: calc(100% + 4px);
-  background: #1e293b; /* Deeper Slate for the Popup */
+  background: #03297a; /* Your App Blue */
   padding: 3px 6px;
   border-radius: 4px;
   white-space: nowrap;
   z-index: 100;
   pointer-events: auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Clean dark shadow */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -22,7 +22,7 @@
   transform: var(--arrow-transform, translateX(-50%));
   border-width: 5px 5px 0 5px;
   border-style: solid;
-  border-color: #1e293b transparent transparent transparent; /* Match deeper slate */
+  border-color: #03297a transparent transparent transparent;
 }
 
 .h-cal-tooltip-info {
@@ -31,24 +31,25 @@
   gap: 0px;
 }
 
+/* ICY BLUE TEXT - Removes eye strain but looks amazing on blue */
 .h-cal-tooltip-name {
   font-size: 0.6rem;
-  font-weight: 800;
-  color: #f1f5f9; /* Off-white for perfect readability */
+  font-weight: 500;
+  color: #dbeafe;
   line-height: 1.2;
 }
 
 .h-cal-tooltip-time {
   font-size: 0.5rem;
-  font-weight: 700;
-  color: #94a3b8; /* Soft grey for secondary info */
+  font-weight: 500;
+  color: #bfdbfe; /* Slightly darker icy blue for hierarchy */
   line-height: 1.2;
 }
 
 .h-cal-tooltip-divider {
   width: 1px;
   height: 18px;
-  background-color: #334155; /* Subtle slate divider */
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .h-cal-tooltip-actions {
@@ -56,32 +57,34 @@
   gap: 3px;
 }
 
+/* Dark frosted glass - Gives the colored icons a canvas to pop out of */
 .h-cal-tooltip-actions .icon-btn {
   width: 18px;
   height: 18px;
-  border: 1px solid #475569;
-  background-color: #1e293b; /* Matches the block color underneath */
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.7);
   border-radius: 4px;
   transition: all 0.2s ease;
 }
 
-/* RESTORED BRAND COLORS - They look incredible on dark backgrounds */
+/* White phone icon (Blue icon would vanish on blue background) */
 .h-cal-tooltip-actions .icon-call {
-  color: #60a5fa; /* Blue */
+  color: #ffffff;
 }
 
 .h-cal-tooltip-actions .icon-call:hover {
-  background-color: #1e3a5f;
-  border-color: #60a5fa;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
+/* RESTORED GREEN WhatsApp icon */
 .h-cal-tooltip-actions .icon-wa {
-  color: #4ade80; /* Green */
+  color: #4ade80;
 }
 
 .h-cal-tooltip-actions .icon-wa:hover {
-  background-color: #14532d;
-  border-color: #4ade80;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .h-cal-tooltip-actions .icon-btn svg {
