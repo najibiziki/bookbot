@@ -1,10 +1,13 @@
+import { useState } from "react";
 import FilterBar from "../../components/filterBar/FilterBar";
 import AppointmentTable from "../../components/appointmentTable/AppointmentTable";
 import AppointmentCalendar from "../../components/appointmentCalendar/AppointmentCalendar";
 import AppointmentStats from "../../components/appointmentStats/AppointmentStats";
 import LoadingPage from "../../components/loadingPage/LoadingPage";
+import AddAppointmentModal from "../../components/addAppointmentModal/AddApointmentModal";
 import { useAppointments } from "../../hooks/appointment/useAppointments";
 import "./Dashboard.css";
+import API_URL from "../../api";
 
 export default function Dashboard() {
   const token = JSON.parse(localStorage.getItem("userInfo"))?.token;
@@ -14,6 +17,7 @@ export default function Dashboard() {
     timezone,
     workingPeriods,
     staffList,
+    servicesList,
     sortedAppointments,
     weekAppointments,
     selectedStaff,
@@ -28,7 +32,46 @@ export default function Dashboard() {
     dropdownRef,
     isCalendarDisabled,
     handleSelect,
+    calendarLayoutData, // <-- 1. ADD THIS
+    calculateFreeSlots, // <-- 2. ADD THIS
   } = useAppointments(token);
+
+  const [selectedFreeSlot, setSelectedFreeSlot] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleFreeSlotClick = (slotData) => {
+    setSelectedFreeSlot(slotData);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedFreeSlot(null);
+  };
+
+  const handleAddAppointment = async (payload) => {
+    try {
+      const response = await fetch(`${API_URL}/api/appointments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create appointment");
+      }
+
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error saving appointment:", error);
+      alert(error.message || "Something went wrong while booking.");
+    }
+  };
 
   if (loading) return <LoadingPage />;
 
@@ -66,15 +109,25 @@ export default function Dashboard() {
             />
           ) : (
             <AppointmentCalendar
-              appointments={sortedAppointments}
-              selectedDay={selectedDay}
+              calendarLayoutData={calendarLayoutData}
+              calculateFreeSlots={calculateFreeSlots}
               timezone={timezone}
-              workingPeriods={workingPeriods}
               staff={selectedStaffData}
+              services={servicesList}
+              onFreeSlotClick={handleFreeSlotClick} // <-- 3. FIX TYPO HERE
             />
           )}
         </div>
       </div>
+
+      {showModal && selectedFreeSlot && (
+        <AddAppointmentModal
+          slotData={selectedFreeSlot}
+          services={servicesList || []}
+          onClose={handleCloseModal}
+          onSubmit={handleAddAppointment}
+        />
+      )}
     </div>
   );
 }

@@ -2,6 +2,15 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import moment from "moment-timezone";
 import API_URL from "../../api";
 
+// Add your calendar logic imports here
+import {
+  createCalendarLayout,
+  classifyWeekDays,
+  extractTemplateSegments,
+  getDayKey,
+  getWeekFreeDays,
+} from "../../utils/calendarLogic";
+
 const getStored = (key, fallback) => {
   try {
     const val = localStorage.getItem(key);
@@ -17,6 +26,7 @@ export const useAppointments = (token) => {
   const [workingPeriods, setWorkingPeriods] = useState(null);
   const [staffData, setStaffData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [servicesData, setServicesData] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const dropdownRef = useRef(null);
@@ -66,6 +76,7 @@ export const useAppointments = (token) => {
         if (bizRes.ok) {
           setWorkingPeriods(bizData.workingPeriods || null);
           setStaffData(bizData.staff || []);
+          setServicesData(bizData.services || []);
         }
       } catch (err) {
         console.error("Failed to fetch data", err);
@@ -106,20 +117,27 @@ export const useAppointments = (token) => {
 
     const future = byStaff.filter((a) => new Date(a.startTime) >= new Date());
 
-    const byDay = selectedDay
-      ? future.filter((a) => {
-          const date = moment
-            .utc(a.startTime)
-            .tz(timezone)
-            .format("YYYY-MM-DD");
-          return date === selectedDay;
-        })
-      : future;
+    if (!selectedDay) return future;
 
-    return [...byDay].sort(
+    const filteredByDate = future.filter((a) => {
+      const appDate = moment.utc(a.startTime).tz(timezone);
+
+      if (viewMode === "calendar") {
+        const startOfWeek = moment(selectedDay).startOf("isoWeek");
+        const endOfWeek = startOfWeek.clone().add(6, "days").endOf("day");
+        return (
+          appDate.isSameOrAfter(startOfWeek, "day") &&
+          appDate.isSameOrBefore(endOfWeek, "day")
+        );
+      }
+
+      return appDate.format("YYYY-MM-DD") === selectedDay;
+    });
+
+    return [...filteredByDate].sort(
       (a, b) => new Date(a.startTime) - new Date(b.startTime),
     );
-  }, [appointments, selectedStaff, selectedDay, timezone]);
+  }, [appointments, selectedStaff, selectedDay, timezone, viewMode]);
 
   const weekAppointments = useMemo(() => {
     if (!selectedStaff) return 0;
@@ -137,6 +155,103 @@ export const useAppointments = (token) => {
       return date.isSameOrAfter(start) && date.isSameOrBefore(end);
     }).length;
   }, [appointments, selectedStaff, selectedDay, timezone]);
+
+  // ==========================================
+  // MOVED CALENDAR LOGIC HERE
+  // ==========================================
+
+  const calendarLayoutData = useMemo(() => {
+    if (!workingPeriods || !selectedDay || isCalendarDisabled) return null;
+
+    const freeTimeColor = "#e2e8f0";
+    const startDay = moment(selectedDay).startOf("isoWeek");
+    const weekDays = Array.from({ length: 7 }, (_, i) =>
+      startDay.clone().add(i, "days"),
+    );
+
+    const weeklyOff = selectedStaffData?.weeklyOff || [];
+    const vacations = selectedStaffData?.vacations || [];
+    const weekFreeDays = getWeekFreeDays(weekDays, weeklyOff, vacations);
+
+    const templateSegments = extractTemplateSegments(workingPeriods);
+    const normalLayout = createCalendarLayout(
+      workingPeriods,
+      getDayKey(moment(selectedDay)),
+      freeTimeColor,
+    );
+
+    const { normalDays, exceptionDays } = classifyWeekDays(
+      weekDays,
+      workingPeriods,
+      templateSegments,
+    );
+
+    // Performance fix: Group appointments by day once
+    const appointmentsByDay = {};
+    sortedAppointments.forEach((app) => {
+      const dayId = moment.utc(app.startTime).tz(timezone).format("YYYY-MM-DD");
+      if (!appointmentsByDay[dayId]) appointmentsByDay[dayId] = [];
+      appointmentsByDay[dayId].push(app);
+    });
+
+    return {
+      freeTimeColor,
+      weekDays,
+      weekFreeDays,
+      normalLayout,
+      normalDays,
+      exceptionDays,
+      appointmentsByDay,
+      workingPeriods,
+    };
+  }, [
+    workingPeriods,
+    selectedDay,
+    selectedStaffData,
+    sortedAppointments,
+    timezone,
+    isCalendarDisabled,
+  ]);
+
+  const calculateFreeSlots = (dayShifts, dayApps) => {
+    if (!dayShifts?.length) return [];
+    const freeSlots = [];
+
+    for (const shift of dayShifts) {
+      const shiftStart = shift.startMins;
+      const shiftEnd = shift.endMins;
+
+      const appsInShift = dayApps
+        .map((app) => {
+          const appStart = moment.utc(app.startTime).tz(timezone);
+          const appEnd = moment.utc(app.endTime).tz(timezone);
+          return {
+            startMins: appStart.hours() * 60 + appStart.minutes(),
+            endMins: appEnd.hours() * 60 + appEnd.minutes(),
+          };
+        })
+        .filter((a) => a.startMins < shiftEnd && a.endMins > shiftStart)
+        .sort((a, b) => a.startMins - b.startMins);
+
+      let currentMins = shiftStart;
+
+      for (const app of appsInShift) {
+        if (app.startMins > currentMins) {
+          freeSlots.push({ startMins: currentMins, endMins: app.startMins });
+        }
+        currentMins = Math.max(currentMins, app.endMins);
+      }
+
+      if (currentMins < shiftEnd) {
+        freeSlots.push({ startMins: currentMins, endMins: shiftEnd });
+      }
+    }
+    return freeSlots;
+  };
+
+  // ==========================================
+  // END MOVED CALENDAR LOGIC
+  // ==========================================
 
   const handleSelect = (staff) => {
     setSelectedStaff(staff);
@@ -164,6 +279,7 @@ export const useAppointments = (token) => {
     timezone,
     workingPeriods,
     staffList,
+    servicesList: servicesData,
     sortedAppointments,
     weekAppointments,
     selectedStaff,
@@ -178,5 +294,8 @@ export const useAppointments = (token) => {
     dropdownRef,
     isCalendarDisabled,
     handleSelect,
+    // Return new calendar data here
+    calendarLayoutData,
+    calculateFreeSlots,
   };
 };

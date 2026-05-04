@@ -1,59 +1,29 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import moment from "moment-timezone";
 import "./AppointmentCalendar.css";
 
 import {
-  createCalendarLayout,
   createExceptionDayLayout,
-  classifyWeekDays,
   getDaySignature,
-  extractTemplateSegments,
   getDayKey,
-  getWeekFreeDays,
+  toTimeStr,
 } from "../../utils/calendarLogic";
 
 import CalendarHourHeader from "../calendarHeader/CalendarHourHeader";
 import AppointmentTooltip from "./AppointmentTooltip";
 
 export default function AppointmentCalendar({
-  appointments,
-  selectedDay,
+  calendarLayoutData,
+  calculateFreeSlots,
   timezone,
-  workingPeriods,
-  staff = null,
+  staff,
+  services = [],
+  onFreeSlotClick,
 }) {
   const [activeTooltip, setActiveTooltip] = useState(null);
-  const freeTimeColor = "#e2e8f0";
+  const lastLayoutSignatureRef = useRef(null);
 
-  // Default to Monday start if viewing today, otherwise start from selected day
-  const todayStr = moment().format("YYYY-MM-DD");
-  const isDefaultDay = selectedDay === todayStr;
-  const startDay = isDefaultDay
-    ? moment(selectedDay).startOf("isoWeek")
-    : moment(selectedDay);
-
-  const weekDays = Array.from({ length: 7 }, (_, i) =>
-    startDay.clone().add(i, "days"),
-  );
-
-  const weeklyOff = staff?.weeklyOff || [];
-  const vacations = staff?.vacations || [];
-  const weekFreeDays = getWeekFreeDays(weekDays, weeklyOff, vacations);
-
-  const templateSegments = extractTemplateSegments(workingPeriods);
-  const normalLayout = createCalendarLayout(
-    workingPeriods,
-    getDayKey(moment(selectedDay)),
-    freeTimeColor,
-  );
-
-  const { normalDays, exceptionDays } = classifyWeekDays(
-    weekDays,
-    workingPeriods,
-    templateSegments,
-  );
-
-  if (normalLayout.isFullyEmpty) {
+  if (!calendarLayoutData) {
     return (
       <div
         className="h-calendar-container"
@@ -64,16 +34,31 @@ export default function AppointmentCalendar({
     );
   }
 
+  const {
+    freeTimeColor,
+    weekDays,
+    weekFreeDays,
+    normalLayout,
+    normalDays,
+    exceptionDays,
+    appointmentsByDay,
+    workingPeriods, // <--- ADD THIS HERE
+  } = calendarLayoutData;
+
+  const handleFreeSlotClick = (e, slotData) => {
+    e.stopPropagation();
+    setActiveTooltip(null);
+    if (onFreeSlotClick) onFreeSlotClick(slotData);
+  };
+
   const renderDayRow = (day, layout, isOff, isStaffFreeDay, freeDayType) => {
     const dayKey = getDayKey(day);
     const dayShifts = layout.getShiftsForDay(dayKey);
     const isFullyOff = !dayShifts.length || isStaffFreeDay;
     const dayId = day.format("YYYY-MM-DD");
 
-    const dayApps = appointments.filter(
-      (a) =>
-        moment.utc(a.startTime).tz(timezone).format("YYYY-MM-DD") === dayId,
-    );
+    const dayApps = appointmentsByDay[dayId] || [];
+    const freeSlots = calculateFreeSlots(dayShifts, dayApps);
 
     const freeDayClass = isStaffFreeDay
       ? freeDayType === "vacation"
@@ -99,6 +84,45 @@ export default function AppointmentCalendar({
             backgroundColor: isFullyOff ? freeTimeColor : "transparent",
           }}
         >
+          {!isFullyOff &&
+            freeSlots.map((slot, index) => {
+              const slotStartMoment = day
+                .clone()
+                .startOf("day")
+                .add(slot.startMins, "minutes");
+              const slotEndMoment = day
+                .clone()
+                .startOf("day")
+                .add(slot.endMins, "minutes");
+              const styles = layout.getStyle(slotStartMoment, slotEndMoment);
+              const slotId = `${dayId}-free-${index}`;
+              const duration = slot.endMins - slot.startMins;
+
+              return (
+                <div
+                  key={slotId}
+                  className="h-cal-free-slot"
+                  style={{ left: styles.left, width: styles.width }}
+                  onClick={(e) =>
+                    handleFreeSlotClick(e, {
+                      date: dayId,
+                      dateMoment: day.clone(),
+                      startTime: toTimeStr(slot.startMins),
+                      endTime: toTimeStr(slot.endMins),
+                      startMins: slot.startMins,
+                      endMins: slot.endMins,
+                      duration,
+                      timezone,
+                      services,
+                      staff,
+                    })
+                  }
+                >
+                  <div className="h-cal-free-slot-icon">+</div>
+                </div>
+              );
+            })}
+
           {!isFullyOff &&
             dayApps.map((app) => {
               const appStart = moment.utc(app.startTime).tz(timezone);
@@ -150,8 +174,6 @@ export default function AppointmentCalendar({
     );
   };
 
-  let lastLayoutSignature = null;
-
   return (
     <div
       className="h-calendar-container"
@@ -165,16 +187,18 @@ export default function AppointmentCalendar({
 
         let freeDayType = null;
         if (isStaffFreeDay) {
-          freeDayType = weeklyOff.includes(getDayKey(day))
+          freeDayType = staff?.weeklyOff?.includes(getDayKey(day))
             ? "weeklyOff"
             : "vacation";
         }
 
+        // FIX: Pass workingPeriods as the 2nd argument, and templateSegments as the 3rd
         const layoutSignature = getDaySignature(
           day,
           workingPeriods,
-          templateSegments,
+          normalLayout.templateSegments,
         );
+
         const isOffDay = layoutSignature === "off" || isStaffFreeDay;
         let currentLayout = normalLayout;
 
@@ -186,8 +210,8 @@ export default function AppointmentCalendar({
         }
 
         const shouldShowHeader =
-          layoutSignature !== lastLayoutSignature && !isOffDay;
-        if (!isOffDay) lastLayoutSignature = layoutSignature;
+          layoutSignature !== lastLayoutSignatureRef.current && !isOffDay;
+        if (!isOffDay) lastLayoutSignatureRef.current = layoutSignature;
 
         return (
           <div key={dayId}>

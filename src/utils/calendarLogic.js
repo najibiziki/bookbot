@@ -48,6 +48,32 @@ const formatDateYMD = (input) => {
   return `${year}-${month}-${day}`;
 };
 
+// TIMEZONE FIX: Safe UTC parser to prevent local browser timezone shifting dates
+const getUTCDayTimestamp = (input) => {
+  if (!input) return 0;
+  if (input instanceof Date) {
+    return Date.UTC(
+      input.getUTCFullYear(),
+      input.getUTCMonth(),
+      input.getUTCDate(),
+    );
+  }
+  if (input._d) {
+    const d = input._d;
+    return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  }
+  const str = String(input).substring(0, 10);
+  const parts = str.split("-");
+  if (parts.length === 3) {
+    return Date.UTC(
+      parseInt(parts[0], 10),
+      parseInt(parts[1], 10) - 1,
+      parseInt(parts[2], 10),
+    );
+  }
+  return 0;
+};
+
 // ===== 3. Math / Layout =====
 export const extractTemplateSegments = (workingPeriods) => {
   let maxBreaks = -1;
@@ -146,7 +172,6 @@ const generateHourMarkersFromTemplate = (templateSegments) => {
   );
 };
 
-// Extracted shared logic for both Normal and Exception layouts
 const createSegmentMapper = (mappedSegments) => {
   const timeToPercent = (timeStr) => {
     const mins = toMinutes(timeStr);
@@ -359,29 +384,17 @@ export const isStaffFreeDay = (day, weeklyOff = [], vacations = []) => {
   if (weeklyOff.includes(dayKey)) return true;
 
   if (vacations?.length > 0) {
-    const dayDate = toDate(day);
-    const dayStart = new Date(
-      dayDate.getFullYear(),
-      dayDate.getMonth(),
-      dayDate.getDate(),
-    ).getTime();
+    const dayTimestamp = getUTCDayTimestamp(day);
 
     for (const vacation of vacations) {
-      const vacS = new Date(vacation.start);
-      const vacStart = new Date(
-        vacS.getFullYear(),
-        vacS.getMonth(),
-        vacS.getDate(),
-      ).getTime();
+      const vacStart = getUTCDayTimestamp(vacation.start);
+      const vacEnd = getUTCDayTimestamp(vacation.end);
 
-      const vacE = new Date(vacation.end);
-      const vacEnd = new Date(
-        vacE.getFullYear(),
-        vacE.getMonth(),
-        vacE.getDate() + 1,
-      ).getTime();
+      // Add 24 hours to make the end date inclusive
+      const vacEndInclusive = vacEnd + 24 * 60 * 60 * 1000;
 
-      if (dayStart >= vacStart && dayStart < vacEnd) return true;
+      if (dayTimestamp >= vacStart && dayTimestamp < vacEndInclusive)
+        return true;
     }
   }
   return false;
