@@ -42,7 +42,7 @@ export default function AppointmentCalendar({
     normalDays,
     exceptionDays,
     appointmentsByDay,
-    workingPeriods, // <--- ADD THIS HERE
+    workingPeriods,
   } = calendarLayoutData;
 
   const handleFreeSlotClick = (e, slotData) => {
@@ -51,12 +51,17 @@ export default function AppointmentCalendar({
     if (onFreeSlotClick) onFreeSlotClick(slotData);
   };
 
-  const renderDayRow = (day, layout, isOff, isStaffFreeDay, freeDayType) => {
+  const getTooltipPosition = (leftPercent) => {
+    if (leftPercent <= 15) return "right";
+    if (leftPercent >= 75) return "left";
+    return "center";
+  };
+
+  const renderDayRow = (day, layout, isStaffFreeDay, freeDayType) => {
     const dayKey = getDayKey(day);
+    const dayId = day.format("YYYY-MM-DD");
     const dayShifts = layout.getShiftsForDay(dayKey);
     const isFullyOff = !dayShifts.length || isStaffFreeDay;
-    const dayId = day.format("YYYY-MM-DD");
-
     const dayApps = appointmentsByDay[dayId] || [];
     const freeSlots = calculateFreeSlots(dayShifts, dayApps);
 
@@ -95,15 +100,17 @@ export default function AppointmentCalendar({
                 .startOf("day")
                 .add(slot.endMins, "minutes");
               const styles = layout.getStyle(slotStartMoment, slotEndMoment);
-              const slotId = `${dayId}-free-${index}`;
               const duration = slot.endMins - slot.startMins;
+              const isDisabled =
+                slotEndMoment.isBefore(moment()) || duration < 15;
 
               return (
                 <div
-                  key={slotId}
-                  className="h-cal-free-slot"
+                  key={`${dayId}-free-${index}`}
+                  className={`h-cal-free-slot ${isDisabled ? "is-past-slot" : ""}`}
                   style={{ left: styles.left, width: styles.width }}
-                  onClick={(e) =>
+                  onClick={(e) => {
+                    if (isDisabled) return;
                     handleFreeSlotClick(e, {
                       date: dayId,
                       dateMoment: day.clone(),
@@ -115,10 +122,10 @@ export default function AppointmentCalendar({
                       timezone,
                       services,
                       staff,
-                    })
-                  }
+                    });
+                  }}
                 >
-                  <div className="h-cal-free-slot-icon">+</div>
+                  {!isDisabled && <div className="h-cal-free-slot-icon">+</div>}
                 </div>
               );
             })}
@@ -129,13 +136,6 @@ export default function AppointmentCalendar({
               const appEnd = moment.utc(app.endTime).tz(timezone);
               const styles = layout.getStyle(appStart, appEnd);
               const leftPercent = parseFloat(styles.left) || 0;
-
-              const tooltipPosition =
-                leftPercent <= 15
-                  ? "right"
-                  : leftPercent >= 75
-                    ? "left"
-                    : "center";
 
               return (
                 <div
@@ -163,7 +163,7 @@ export default function AppointmentCalendar({
                       app={app}
                       appStart={appStart}
                       appEnd={appEnd}
-                      position={tooltipPosition}
+                      position={getTooltipPosition(leftPercent)}
                     />
                   )}
                 </div>
@@ -183,7 +183,7 @@ export default function AppointmentCalendar({
         const dayId = day.format("YYYY-MM-DD");
         const isException = exceptionDays.has(dayId);
         const isStaffFreeDay = weekFreeDays.has(dayId);
-        const isOff = !normalDays.has(dayId) && !isException;
+        const isNormalDay = normalDays.has(dayId);
 
         let freeDayType = null;
         if (isStaffFreeDay) {
@@ -192,16 +192,14 @@ export default function AppointmentCalendar({
             : "vacation";
         }
 
-        // FIX: Pass workingPeriods as the 2nd argument, and templateSegments as the 3rd
         const layoutSignature = getDaySignature(
           day,
           workingPeriods,
           normalLayout.templateSegments,
         );
-
         const isOffDay = layoutSignature === "off" || isStaffFreeDay;
-        let currentLayout = normalLayout;
 
+        let currentLayout = normalLayout;
         if (isException && !isStaffFreeDay) {
           const dayShifts = normalLayout.getShiftsForDay(getDayKey(day));
           if (dayShifts.length > 0) {
@@ -210,19 +208,13 @@ export default function AppointmentCalendar({
         }
 
         const shouldShowHeader =
-          layoutSignature !== lastLayoutSignatureRef.current && !isOffDay;
+          !isOffDay && layoutSignature !== lastLayoutSignatureRef.current;
         if (!isOffDay) lastLayoutSignatureRef.current = layoutSignature;
 
         return (
           <div key={dayId}>
             {shouldShowHeader && <CalendarHourHeader layout={currentLayout} />}
-            {renderDayRow(
-              day,
-              currentLayout,
-              isOff,
-              isStaffFreeDay,
-              freeDayType,
-            )}
+            {renderDayRow(day, currentLayout, isStaffFreeDay, freeDayType)}
           </div>
         );
       })}

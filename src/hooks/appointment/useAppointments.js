@@ -1,8 +1,6 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import moment from "moment-timezone";
 import API_URL from "../../api";
-
-// Add your calendar logic imports here
 import {
   createCalendarLayout,
   classifyWeekDays,
@@ -20,74 +18,88 @@ const getStored = (key, fallback) => {
   }
 };
 
+const STORAGE_KEYS = {
+  STAFF: "filterStaff",
+  DAY: "filterDay",
+  VIEW: "filterView",
+};
+
 export const useAppointments = (token) => {
+  // Data state
   const [appointments, setAppointments] = useState([]);
   const [timezone, setTimezone] = useState("UTC");
   const [workingPeriods, setWorkingPeriods] = useState(null);
   const [staffData, setStaffData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [servicesData, setServicesData] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const dropdownRef = useRef(null);
-
+  // Filter state
   const [selectedStaff, setSelectedStaff] = useState(() =>
-    getStored("filterStaff", null),
+    getStored(STORAGE_KEYS.STAFF, null),
   );
   const [selectedDay, setSelectedDay] = useState(() =>
-    getStored("filterDay", new Date().toLocaleDateString("en-CA")),
+    getStored(STORAGE_KEYS.DAY, new Date().toLocaleDateString("en-CA")),
   );
   const [viewMode, setViewMode] = useState(() =>
-    getStored("filterView", "calendar"),
+    getStored(STORAGE_KEYS.VIEW, "calendar"),
   );
 
-  useEffect(() => {
-    localStorage.setItem("filterStaff", selectedStaff || "");
-  }, [selectedStaff]);
-  useEffect(() => {
-    localStorage.setItem("filterDay", selectedDay);
-  }, [selectedDay]);
-  useEffect(() => {
-    localStorage.setItem("filterView", viewMode);
-  }, [viewMode]);
+  // UI state
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [selectedFreeSlot, setSelectedFreeSlot] = useState(null);
+
+  // Sync filters to localStorage
   useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.STAFF, selectedStaff || "");
+    localStorage.setItem(STORAGE_KEYS.DAY, selectedDay);
+    localStorage.setItem(STORAGE_KEYS.VIEW, viewMode);
+  }, [selectedStaff, selectedDay, viewMode]);
+
+  // Fetch initial data
+  const fetchInitialData = useCallback(async () => {
     if (!token) return;
 
-    const fetchData = async () => {
-      try {
-        const [appRes, bizRes] = await Promise.all([
-          fetch(`${API_URL}/api/business/appointments`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${API_URL}/api/business/mybusiness`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+    try {
+      const [appRes, bizRes] = await Promise.all([
+        fetch(`${API_URL}/api/business/appointments`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${API_URL}/api/business/mybusiness`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
 
-        const appData = await appRes.json();
-        const bizData = await bizRes.json();
+      const [appData, bizData] = await Promise.all([
+        appRes.json(),
+        bizRes.json(),
+      ]);
 
-        if (appRes.ok) {
-          setAppointments(appData.appointments || []);
-          setTimezone(appData.timezone || "UTC");
-        }
-
-        if (bizRes.ok) {
-          setWorkingPeriods(bizData.workingPeriods || null);
-          setStaffData(bizData.staff || []);
-          setServicesData(bizData.services || []);
-        }
-      } catch (err) {
-        console.error("Failed to fetch data", err);
-      } finally {
-        setLoading(false);
+      if (appRes.ok) {
+        setAppointments(appData.appointments || []);
+        setTimezone(appData.timezone || "UTC");
       }
-    };
 
-    fetchData();
+      if (bizRes.ok) {
+        setWorkingPeriods(bizData.workingPeriods || null);
+        setStaffData(bizData.staff || []);
+        setServicesData(bizData.services || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch data", err);
+    } finally {
+      setLoading(false);
+    }
   }, [token]);
 
+  useEffect(() => {
+    fetchInitialData();
+  }, [fetchInitialData]);
+
+  // Derived data
   const staffList = useMemo(() => {
     return [...new Set(appointments.map((a) => a.staffName))]
       .filter(Boolean)
@@ -101,12 +113,32 @@ export const useAppointments = (token) => {
 
   const isCalendarDisabled = selectedStaff === "all";
 
+  // Set default staff when list is available
   useEffect(() => {
     if (staffList.length > 0 && selectedStaff === null) {
       setSelectedStaff(staffList[0]);
     }
   }, [staffList, selectedStaff]);
 
+  // Fall back to table view when calendar is disabled
+  useEffect(() => {
+    if (isCalendarDisabled && viewMode === "calendar") {
+      setViewMode("table");
+    }
+  }, [isCalendarDisabled, viewMode]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Filtered and sorted appointments
   const sortedAppointments = useMemo(() => {
     if (!selectedStaff) return [];
 
@@ -115,18 +147,30 @@ export const useAppointments = (token) => {
         ? appointments
         : appointments.filter((a) => a.staffName === selectedStaff);
 
-    const future = byStaff.filter((a) => new Date(a.startTime) >= new Date());
+    if (!selectedDay) {
+      return byStaff
+        .filter((a) => new Date(a.startTime) >= new Date())
+        .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+    }
 
-    if (!selectedDay) return future;
-
-    const filteredByDate = future.filter((a) => {
+    const filteredByDate = byStaff.filter((a) => {
       const appDate = moment.utc(a.startTime).tz(timezone);
 
       if (viewMode === "calendar") {
-        const startOfWeek = moment(selectedDay).startOf("isoWeek");
-        const endOfWeek = startOfWeek.clone().add(6, "days").endOf("day");
+        const startOfSelectedWeek = moment(selectedDay).startOf("isoWeek");
+        const startOfCurrentWeek = moment().tz(timezone).startOf("isoWeek");
+
+        if (startOfSelectedWeek.isBefore(startOfCurrentWeek, "day")) {
+          return false;
+        }
+
+        const endOfWeek = startOfSelectedWeek
+          .clone()
+          .add(6, "days")
+          .endOf("day");
+
         return (
-          appDate.isSameOrAfter(startOfWeek, "day") &&
+          appDate.isSameOrAfter(startOfSelectedWeek, "day") &&
           appDate.isSameOrBefore(endOfWeek, "day")
         );
       }
@@ -139,6 +183,7 @@ export const useAppointments = (token) => {
     );
   }, [appointments, selectedStaff, selectedDay, timezone, viewMode]);
 
+  // Count appointments for the week
   const weekAppointments = useMemo(() => {
     if (!selectedStaff) return 0;
 
@@ -156,10 +201,7 @@ export const useAppointments = (token) => {
     }).length;
   }, [appointments, selectedStaff, selectedDay, timezone]);
 
-  // ==========================================
-  // MOVED CALENDAR LOGIC HERE
-  // ==========================================
-
+  // Calendar layout data
   const calendarLayoutData = useMemo(() => {
     if (!workingPeriods || !selectedDay || isCalendarDisabled) return null;
 
@@ -168,25 +210,21 @@ export const useAppointments = (token) => {
     const weekDays = Array.from({ length: 7 }, (_, i) =>
       startDay.clone().add(i, "days"),
     );
-
     const weeklyOff = selectedStaffData?.weeklyOff || [];
     const vacations = selectedStaffData?.vacations || [];
     const weekFreeDays = getWeekFreeDays(weekDays, weeklyOff, vacations);
-
     const templateSegments = extractTemplateSegments(workingPeriods);
     const normalLayout = createCalendarLayout(
       workingPeriods,
       getDayKey(moment(selectedDay)),
       freeTimeColor,
     );
-
     const { normalDays, exceptionDays } = classifyWeekDays(
       weekDays,
       workingPeriods,
       templateSegments,
     );
 
-    // Performance fix: Group appointments by day once
     const appointmentsByDay = {};
     sortedAppointments.forEach((app) => {
       const dayId = moment.utc(app.startTime).tz(timezone).format("YYYY-MM-DD");
@@ -213,75 +251,101 @@ export const useAppointments = (token) => {
     isCalendarDisabled,
   ]);
 
-  const calculateFreeSlots = (dayShifts, dayApps) => {
-    if (!dayShifts?.length) return [];
-    const freeSlots = [];
+  // Calculate free slots for a given day
+  const calculateFreeSlots = useCallback(
+    (dayShifts, dayApps) => {
+      if (!dayShifts?.length) return [];
 
-    for (const shift of dayShifts) {
-      const shiftStart = shift.startMins;
-      const shiftEnd = shift.endMins;
+      const freeSlots = [];
 
-      const appsInShift = dayApps
-        .map((app) => {
-          const appStart = moment.utc(app.startTime).tz(timezone);
-          const appEnd = moment.utc(app.endTime).tz(timezone);
-          return {
-            startMins: appStart.hours() * 60 + appStart.minutes(),
-            endMins: appEnd.hours() * 60 + appEnd.minutes(),
-          };
-        })
-        .filter((a) => a.startMins < shiftEnd && a.endMins > shiftStart)
-        .sort((a, b) => a.startMins - b.startMins);
+      for (const shift of dayShifts) {
+        const { startMins: shiftStart, endMins: shiftEnd } = shift;
+        const appsInShift = dayApps
+          .map((app) => {
+            const appStart = moment.utc(app.startTime).tz(timezone);
+            const appEnd = moment.utc(app.endTime).tz(timezone);
+            return {
+              startMins: appStart.hours() * 60 + appStart.minutes(),
+              endMins: appEnd.hours() * 60 + appEnd.minutes(),
+            };
+          })
+          .filter((a) => a.startMins < shiftEnd && a.endMins > shiftStart)
+          .sort((a, b) => a.startMins - b.startMins);
 
-      let currentMins = shiftStart;
+        let currentMins = shiftStart;
 
-      for (const app of appsInShift) {
-        if (app.startMins > currentMins) {
-          freeSlots.push({ startMins: currentMins, endMins: app.startMins });
+        for (const app of appsInShift) {
+          if (app.startMins > currentMins) {
+            freeSlots.push({ startMins: currentMins, endMins: app.startMins });
+          }
+          currentMins = Math.max(currentMins, app.endMins);
         }
-        currentMins = Math.max(currentMins, app.endMins);
+
+        if (currentMins < shiftEnd) {
+          freeSlots.push({ startMins: currentMins, endMins: shiftEnd });
+        }
       }
 
-      if (currentMins < shiftEnd) {
-        freeSlots.push({ startMins: currentMins, endMins: shiftEnd });
-      }
-    }
-    return freeSlots;
-  };
+      return freeSlots;
+    },
+    [timezone],
+  );
 
-  // ==========================================
-  // END MOVED CALENDAR LOGIC
-  // ==========================================
-
+  // Handlers
   const handleSelect = (staff) => {
     setSelectedStaff(staff);
     setIsDropdownOpen(false);
   };
 
-  useEffect(() => {
-    if (isCalendarDisabled && viewMode === "calendar") {
-      setViewMode("table");
-    }
-  }, [isCalendarDisabled, viewMode]);
+  const handleFreeSlotClick = (slotData) => {
+    setSelectedFreeSlot(slotData);
+    setShowModal(true);
+  };
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsDropdownOpen(false);
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedFreeSlot(null);
+  };
+
+  const handleAddAppointment = async (payload) => {
+    try {
+      const response = await fetch(`${API_URL}/api/appointments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create appointment");
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+
+      handleCloseModal();
+      await fetchInitialData();
+    } catch (error) {
+      console.error("Error saving appointment:", error);
+      alert(error.message || "Something went wrong while booking.");
+    }
+  };
 
   return {
+    // Data
     loading,
     timezone,
     workingPeriods,
     staffList,
     servicesList: servicesData,
+
+    // Filtered data
     sortedAppointments,
     weekAppointments,
+    calendarLayoutData,
+
+    // Filters
     selectedStaff,
     setSelectedStaff,
     selectedStaffData,
@@ -289,13 +353,22 @@ export const useAppointments = (token) => {
     setSelectedDay,
     viewMode,
     setViewMode,
+    isCalendarDisabled,
+
+    // UI
     isDropdownOpen,
     setIsDropdownOpen,
     dropdownRef,
-    isCalendarDisabled,
+
+    // Handlers
     handleSelect,
-    // Return new calendar data here
-    calendarLayoutData,
     calculateFreeSlots,
+
+    // Modal
+    showModal,
+    selectedFreeSlot,
+    handleFreeSlotClick,
+    handleCloseModal,
+    handleAddAppointment,
   };
 };

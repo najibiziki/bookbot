@@ -1,10 +1,13 @@
+/* ===========================
+   Layout & Container
+   =========================== */
 .h-calendar-container {
   display: flex;
   flex-direction: column;
   gap: 5px;
   width: 100%;
   box-sizing: border-box;
-  padding: 0 3px 20px 3px;
+  padding: 0 3px 20px;
 }
 
 .h-cal-row {
@@ -15,6 +18,18 @@
   z-index: 20;
 }
 
+.h-cal-time-track {
+  flex-grow: 1;
+  position: relative;
+  height: 28px;
+  background-color: transparent;
+  background-size: 100% 100%;
+  overflow: visible;
+}
+
+/* ===========================
+   Day Labels & States
+   =========================== */
 .h-cal-day-label {
   width: 38px;
   height: 28px;
@@ -23,45 +38,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-bottom: 2px;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  margin-bottom: 2px;
   transition: all 0.2s ease;
-}
-
-.h-cal-row.is-today .h-cal-day-label {
-  background: #2563eb;
-  border-color: #2563eb;
-  color: #fff;
-  box-shadow: 0 2px 6px -2px rgba(37, 99, 235, 0.5);
-}
-
-.h-cal-row.is-weekly-off .h-cal-day-label {
-  background: #f0f9ff;
-  border-color: #93c5fd;
-  color: #1d4ed8;
-}
-
-.h-cal-row.is-weekly-off.is-today .h-cal-day-label {
-  background: #3b82f6;
-  border-color: #2563eb;
-  color: #fff;
-  box-shadow: 0 2px 6px -2px rgba(59, 130, 246, 0.5);
-}
-
-.h-cal-row.is-vacation .h-cal-day-label {
-  background: #fef2f2;
-  border-color: #fca5a5;
-  color: #dc2626;
-}
-
-.h-cal-row.is-vacation.is-today .h-cal-day-label {
-  background: #ef4444;
-  border-color: #dc2626;
-  color: #fff;
-  box-shadow: 0 2px 6px -2px rgba(239, 68, 68, 0.5);
 }
 
 .h-cal-day-name {
@@ -77,17 +59,45 @@
   line-height: 1.1;
 }
 
-.h-cal-time-track {
-  flex-grow: 1;
-  position: relative;
-  height: 28px;
-  background-color: transparent;
-  background-size: 100% 100%;
-  border: none;
-  box-shadow: none;
-  overflow: visible;
+/* Today */
+.h-cal-row.is-today .h-cal-day-label {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+  box-shadow: 0 2px 6px -2px rgba(37, 99, 235, 0.5);
 }
 
+/* Weekly Off */
+.h-cal-row.is-weekly-off .h-cal-day-label {
+  background: #f0f9ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.h-cal-row.is-weekly-off.is-today .h-cal-day-label {
+  background: #3b82f6;
+  border-color: #2563eb;
+  color: #fff;
+  box-shadow: 0 2px 6px -2px rgba(59, 130, 246, 0.5);
+}
+
+/* Vacation */
+.h-cal-row.is-vacation .h-cal-day-label {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.h-cal-row.is-vacation.is-today .h-cal-day-label {
+  background: #ef4444;
+  border-color: #dc2626;
+  color: #fff;
+  box-shadow: 0 2px 6px -2px rgba(239, 68, 68, 0.5);
+}
+
+/* ===========================
+   Appointments
+   =========================== */
 .h-cal-appointment-wrapper {
   position: absolute;
   top: 0;
@@ -112,7 +122,6 @@
 }
 
 .h-cal-appointment-wrapper:hover .h-cal-appointment {
-  background: #03297a;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
@@ -136,25 +145,33 @@
   flex-shrink: 0;
 }
 
+/* ===========================
+   Free Slots
+   =========================== */
 .h-cal-free-slot {
   position: absolute;
   top: 0;
   height: 100%;
-  cursor: pointer;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .h-cal-free-slot:hover {
   background-color: rgba(0, 0, 0, 0.04);
 }
 
+.h-cal-free-slot.is-past-slot {
+  cursor: default;
+  pointer-events: none;
+}
+
 .h-cal-free-slot-icon {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 400;
-  color: #cbd5e1;
+  color: #41474e;
   user-select: none;
   line-height: 1;
 }
@@ -163,26 +180,39 @@
   color: #64748b;
 }
 
+/* ===========================
+   Responsive
+   =========================== */
 @media (max-width: 480px) {
   .h-cal-day-label {
     width: 32px;
     height: 24px;
     border-radius: 4px;
   }
+
   .h-cal-day-name {
     font-size: 0.45rem;
   }
+
   .h-cal-day-num {
     font-size: 0.6rem;
   }
+
   .h-cal-app-name {
     font-size: 0.3rem;
     font-weight: 300;
   }
+
   .h-cal-app-time {
     display: none;
   }
+
   .h-cal-free-slot-icon {
-    font-size: 14px;
+    font-size: 10px;
   }
+}
+.h-cal-free-slot.is-past-slot {
+  cursor: default;
+  pointer-events: none;
+  background: #0e1421;
 }

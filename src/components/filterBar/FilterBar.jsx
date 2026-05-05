@@ -15,6 +15,9 @@ export default function FilterBar({
   setViewMode,
   isCalendarDisabled,
 }) {
+  // Get today's date in YYYY-MM-DD format to block past dates
+  const today = new Date().toLocaleDateString("en-CA");
+
   return (
     <div className="staff-filter">
       {/* STAFF */}
@@ -67,6 +70,7 @@ export default function FilterBar({
           type="date"
           className="week-input"
           value={selectedDay}
+          min={today} // <--- ADDED THIS: Blocks past dates in the picker
           onChange={(e) => setSelectedDay(e.target.value)}
         />
       </div>
