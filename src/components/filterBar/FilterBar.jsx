@@ -14,17 +14,29 @@ export default function FilterBar({
   viewMode,
   setViewMode,
   isCalendarDisabled,
+  searchQuery,
+  setSearchQuery,
 }) {
-  // Get today's date in YYYY-MM-DD format to block past dates
   const today = new Date().toLocaleDateString("en-CA");
 
   return (
     <div className="staff-filter">
+      {/* SEARCH - MOVED TO FIRST */}
+      <div className="staff-filter-group search-group-mobile">
+        <label>Search</label>
+        <input
+          type="text"
+          className="week-input"
+          placeholder="Client..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
       {/* STAFF */}
       {staffList.length > 0 && (
         <div className="staff-filter-group">
           <label>Staff</label>
-
           <div className="custom-select" ref={dropdownRef}>
             <div
               className="select-trigger"
@@ -33,12 +45,10 @@ export default function FilterBar({
               <span>
                 {selectedStaff === "all" ? "All Staff" : selectedStaff}
               </span>
-
               <svg width="12" height="12" viewBox="0 0 16 16" fill="#333">
                 <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
               </svg>
             </div>
-
             {isDropdownOpen && (
               <ul className="select-options">
                 <li
@@ -47,7 +57,6 @@ export default function FilterBar({
                 >
                   All Staff
                 </li>
-
                 {staffList.map((staff) => (
                   <li
                     key={staff}
@@ -70,17 +79,15 @@ export default function FilterBar({
           type="date"
           className="week-input"
           value={selectedDay}
-          min={today} // <--- ADDED THIS: Blocks past dates in the picker
+          min={today}
           onChange={(e) => setSelectedDay(e.target.value)}
         />
       </div>
 
-      {/* VIEW - CALENDAR FIRST */}
+      {/* VIEW */}
       <div className="staff-filter-group">
         <label>View</label>
-
         <div className="view-toggle">
-          {/* CALENDAR ICON (NOW FIRST) */}
           <button
             disabled={isCalendarDisabled}
             className={viewMode === "calendar" ? "active" : ""}
@@ -91,8 +98,8 @@ export default function FilterBar({
             }}
           >
             <svg
-              width="16"
-              height="16"
+              width="14"
+              height="14"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -106,15 +113,13 @@ export default function FilterBar({
               <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
           </button>
-
-          {/* TABLE ICON (NOW SECOND) */}
           <button
             className={viewMode === "table" ? "active" : ""}
             onClick={() => setViewMode("table")}
           >
             <svg
-              width="16"
-              height="16"
+              width="14"
+              height="14"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"

@@ -1,7 +1,6 @@
 import FilterBar from "../../components/filterBar/FilterBar";
 import AppointmentTable from "../../components/appointmentTable/AppointmentTable";
 import AppointmentCalendar from "../../components/appointmentCalendar/AppointmentCalendar";
-import AppointmentStats from "../../components/appointmentStats/AppointmentStats";
 import LoadingPage from "../../components/loadingPage/LoadingPage";
 import AddAppointmentModal from "../../components/addAppointmentModal/AddApointmentModal";
 import { useAppointments } from "../../hooks/appointment/useAppointments";
@@ -16,7 +15,6 @@ export default function Dashboard() {
     staffList,
     servicesList,
     sortedAppointments,
-    weekAppointments,
     selectedStaff,
     setSelectedStaff,
     selectedStaffData,
@@ -36,6 +34,8 @@ export default function Dashboard() {
     handleFreeSlotClick,
     handleCloseModal,
     handleAddAppointment,
+    searchQuery,
+    setSearchQuery,
   } = useAppointments(token);
 
   if (loading) return <LoadingPage />;
@@ -57,12 +57,8 @@ export default function Dashboard() {
             viewMode={viewMode}
             setViewMode={setViewMode}
             isCalendarDisabled={isCalendarDisabled}
-          />
-
-          <AppointmentStats
-            dayCount={sortedAppointments.length}
-            weekCount={weekAppointments}
-            selectedDay={selectedDay}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
           />
         </div>
 

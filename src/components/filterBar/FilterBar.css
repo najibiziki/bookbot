@@ -42,9 +42,10 @@
 }
 
 /* =========================
-   DATE INPUT
+   DATE INPUT & SEARCH INPUT
 ========================= */
 .week-input {
+  width: 100%;
   padding: 0 8px;
   border: 1px solid #d1d5db;
   font-size: 0.72rem;
@@ -71,7 +72,7 @@
 ========================= */
 .custom-select {
   position: relative;
-  min-width: 140px; /* Default desktop size */
+  min-width: 140px;
   user-select: none;
   z-index: 90;
 }
@@ -169,31 +170,54 @@
 }
 
 /* =========================
-   MOBILE: FORCE 1 LINE & SHRINK
+   MOBILE: SMALLER WIDTHS & SEARCH FIRST
 ========================= */
 @media (max-width: 480px) {
   .staff-filter {
-    flex-wrap: nowrap; /* Stays on 1 line */
-    overflow-x: visible; /* Keeps dropdown from being cut off */
-    gap: 8px;
-    padding: 8px 10px;
-    justify-content: center; /* Centers the boxes */
+    flex-wrap: nowrap;
+    overflow-x: visible;
+    gap: 6px; /* Reduced gap */
+    padding: 4px 6px; /* Reduced padding */
+    justify-content: center;
   }
 
   .staff-filter-group {
-    gap: 4px;
-    flex: 1; /* Magic: Forces boxes to share space equally */
-    min-width: 0; /* Magic: Allows boxes to shrink smaller than their content */
-    align-items: stretch; /* Makes inputs stretch to fill the new width */
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    align-items: stretch;
+  }
+
+  /* Give search slightly more space than the others */
+  .search-group-mobile {
+    flex: 1.5;
+  }
+
+  /* SHRINK EVERYTHING */
+  .week-input,
+  .custom-select,
+  .view-toggle,
+  .select-trigger {
+    height: 28px; /* Reduced height from 32px */
+  }
+
+  .week-input {
+    padding: 0 5px; /* Reduced padding */
+    font-size: 0.65rem; /* Reduced font */
+  }
+
+  .select-trigger {
+    padding: 0 5px; /* Reduced padding */
+    font-size: 0.65rem; /* Reduced font */
   }
 
   .custom-select {
-    min-width: 0; /* Overrides desktop 140px so it can shrink */
-    width: 100%; /* Fills the group */
+    min-width: 0;
+    width: 100%;
   }
 
   .staff-filter-group label {
-    font-size: 0.55rem;
+    font-size: 0.5rem; /* Reduced label size */
     opacity: 0.8;
   }
 
@@ -201,16 +225,17 @@
     border: 1px solid #d1d5db;
     border-radius: 6px;
     box-shadow: none;
-    width: 100%; /* Fills the group */
+    width: 100%;
   }
 
   .view-toggle button {
     flex: 1;
-    height: 30px;
+    height: 28px; /* Match reduced height */
     border: none;
     border-right: 1px solid #e5e7eb;
     border-radius: 0;
     width: auto;
+    padding: 0 4px;
   }
 
   .view-toggle button:last-child {
@@ -224,16 +249,17 @@
 }
 
 /* =========================
-   DESKTOP: 3 LINES SIDEBAR
+   DESKTOP: SIDEBAR LINES
 ========================= */
 @media (min-width: 860px) {
   .staff-filter {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 12px;
+    width: fit-content;
   }
 
   .staff-filter-group {
-    width: auto;
+    width: 100%;
   }
 }

@@ -46,6 +46,7 @@ export const useAppointments = (token) => {
 
   // UI state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // Search state
   const dropdownRef = useRef(null);
 
   // Modal state
@@ -138,7 +139,7 @@ export const useAppointments = (token) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Filtered and sorted appointments
+  // Filtered, searched, and sorted appointments
   const sortedAppointments = useMemo(() => {
     if (!selectedStaff) return [];
 
@@ -178,28 +179,24 @@ export const useAppointments = (token) => {
       return appDate.format("YYYY-MM-DD") === selectedDay;
     });
 
-    return [...filteredByDate].sort(
+    // Apply Search Filter
+    const finalFiltered = searchQuery.trim()
+      ? filteredByDate.filter((a) =>
+          a.clientName?.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+      : filteredByDate;
+
+    return [...finalFiltered].sort(
       (a, b) => new Date(a.startTime) - new Date(b.startTime),
     );
-  }, [appointments, selectedStaff, selectedDay, timezone, viewMode]);
-
-  // Count appointments for the week
-  const weekAppointments = useMemo(() => {
-    if (!selectedStaff) return 0;
-
-    const byStaff =
-      selectedStaff === "all"
-        ? appointments
-        : appointments.filter((a) => a.staffName === selectedStaff);
-
-    const start = moment(selectedDay).startOf("day");
-    const end = moment(selectedDay).add(6, "days").endOf("day");
-
-    return byStaff.filter((a) => {
-      const date = moment.utc(a.startTime).tz(timezone);
-      return date.isSameOrAfter(start) && date.isSameOrBefore(end);
-    }).length;
-  }, [appointments, selectedStaff, selectedDay, timezone]);
+  }, [
+    appointments,
+    selectedStaff,
+    selectedDay,
+    timezone,
+    viewMode,
+    searchQuery,
+  ]);
 
   // Calendar layout data
   const calendarLayoutData = useMemo(() => {
@@ -342,7 +339,6 @@ export const useAppointments = (token) => {
 
     // Filtered data
     sortedAppointments,
-    weekAppointments,
     calendarLayoutData,
 
     // Filters
@@ -354,6 +350,8 @@ export const useAppointments = (token) => {
     viewMode,
     setViewMode,
     isCalendarDisabled,
+    searchQuery,
+    setSearchQuery,
 
     // UI
     isDropdownOpen,
