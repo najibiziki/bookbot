@@ -21,7 +21,7 @@ export default function FilterBar({
 
   return (
     <div className="staff-filter">
-      {/* SEARCH - MOVED TO FIRST */}
+      {/* SEARCH */}
       <div className="staff-filter-group search-group-mobile">
         <label>Search</label>
         <input
@@ -45,7 +45,7 @@ export default function FilterBar({
               <span>
                 {selectedStaff === "all" ? "All Staff" : selectedStaff}
               </span>
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="#333">
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="#333">
                 <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
               </svg>
             </div>
@@ -73,7 +73,7 @@ export default function FilterBar({
       )}
 
       {/* DAY */}
-      <div className="staff-filter-group">
+      <div className="staff-filter-group day-group-mobile">
         <label>Day</label>
         <input
           type="date"
@@ -98,12 +98,12 @@ export default function FilterBar({
             }}
           >
             <svg
-              width="14"
-              height="14"
+              width="12"
+              height="12"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -118,12 +118,12 @@ export default function FilterBar({
             onClick={() => setViewMode("table")}
           >
             <svg
-              width="14"
-              height="14"
+              width="12"
+              height="12"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
