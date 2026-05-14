@@ -104,8 +104,9 @@
   height: 100%;
   z-index: 5;
   cursor: pointer;
-  transition: filter 0.2s ease;
-  /* Removed background and border-radius from here to fix the "double box" bug */
+  -webkit-tap-highlight-color: transparent; /* FIX: Removes the phone's default gray flash */
+  outline: none; /* FIX: Prevents any accidental focus borders */
+  transition: filter 0.15s ease; /* Made slightly faster so it feels instant */
 }
 
 /* Hover effect applies to the WHOLE block */
@@ -121,7 +122,7 @@
 .h-cal-appointment {
   position: relative;
   height: 100%;
-  width: calc(100% - 2px); /* Shrinks by 2px to create the gap */
+  width: calc(100% - 2px); /* Keeps the clean gap */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -129,8 +130,8 @@
   padding: 0 5px;
   box-sizing: border-box;
   overflow: hidden;
-  background: #03297a; /* Background is back on the inner block */
-  border-right: 1px solid rgba(255, 255, 255, 0.25); /* Clean, elegant white separation line */
+  background: #03297a;
+  /* border-right: 1px solid rgba(255, 255, 255, 0.25); The elegant white line */
 }
 
 .h-cal-app-name {
@@ -152,7 +153,6 @@
   line-height: 1;
   flex-shrink: 0;
 }
-
 /* ===========================
    Free Slots
    =========================== */
