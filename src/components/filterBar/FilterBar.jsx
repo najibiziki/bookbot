@@ -21,7 +21,7 @@ export default function FilterBar({
 
   return (
     <div className="staff-filter">
-      {/* SEARCH */}
+      {/* 1. SEARCH */}
       <div className="staff-filter-group search-group-mobile">
         <label>Search</label>
         <input
@@ -33,7 +33,19 @@ export default function FilterBar({
         />
       </div>
 
-      {/* STAFF - Always shows now */}
+      {/* 2. DAY (Moved up) */}
+      <div className="staff-filter-group day-group-mobile">
+        <label>Day</label>
+        <input
+          type="date"
+          className="week-input"
+          value={selectedDay}
+          min={today}
+          onChange={(e) => setSelectedDay(e.target.value)}
+        />
+      </div>
+
+      {/* 3. STAFF (Moved down) */}
       <div className="staff-filter-group">
         <label>Staff</label>
         <div className="custom-select" ref={dropdownRef}>
@@ -68,19 +80,7 @@ export default function FilterBar({
         </div>
       </div>
 
-      {/* DAY */}
-      <div className="staff-filter-group day-group-mobile">
-        <label>Day</label>
-        <input
-          type="date"
-          className="week-input"
-          value={selectedDay}
-          min={today}
-          onChange={(e) => setSelectedDay(e.target.value)}
-        />
-      </div>
-
-      {/* VIEW */}
+      {/* 4. VIEW */}
       <div className="staff-filter-group">
         <label>View</label>
         <div className="view-toggle">
