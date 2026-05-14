@@ -104,12 +104,24 @@
   height: 100%;
   z-index: 5;
   cursor: pointer;
+  transition: filter 0.2s ease;
+  /* Removed background and border-radius from here to fix the "double box" bug */
+}
+
+/* Hover effect applies to the WHOLE block */
+.h-cal-appointment-wrapper:hover {
+  filter: brightness(1.15);
+}
+
+/* Tap effect for phones applies to the WHOLE block */
+.h-cal-appointment-wrapper:active {
+  filter: brightness(0.9);
 }
 
 .h-cal-appointment {
   position: relative;
   height: 100%;
-  width: calc(100% - 3px); /* Slightly more room for the shadow */
+  width: calc(100% - 2px); /* Shrinks by 2px to create the gap */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -117,14 +129,8 @@
   padding: 0 5px;
   box-sizing: border-box;
   overflow: hidden;
-  background: #03297a;
-  /* REMOVED: border-right: 2px solid rgba(255, 255, 255, 0.6); */
-  box-shadow: inset -2px 0 3px rgba(0, 0, 0, 0.25); /* NEW: Soft inner shadow for a clean 3D split */
-  transition: all 0.2s ease;
-}
-
-.h-cal-appointment-wrapper:hover .h-cal-appointment {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  background: #03297a; /* Background is back on the inner block */
+  border-right: 1px solid rgba(255, 255, 255, 0.25); /* Clean, elegant white separation line */
 }
 
 .h-cal-app-name {
