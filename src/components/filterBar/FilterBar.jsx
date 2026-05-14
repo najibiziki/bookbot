@@ -33,44 +33,40 @@ export default function FilterBar({
         />
       </div>
 
-      {/* STAFF */}
-      {staffList.length > 0 && (
-        <div className="staff-filter-group">
-          <label>Staff</label>
-          <div className="custom-select" ref={dropdownRef}>
-            <div
-              className="select-trigger"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
-              <span>
-                {selectedStaff === "all" ? "All Staff" : selectedStaff}
-              </span>
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="#333">
-                <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-              </svg>
-            </div>
-            {isDropdownOpen && (
-              <ul className="select-options">
-                <li
-                  className={selectedStaff === "all" ? "active" : ""}
-                  onClick={() => handleSelect("all")}
-                >
-                  All Staff
-                </li>
-                {staffList.map((staff) => (
-                  <li
-                    key={staff}
-                    className={selectedStaff === staff ? "active" : ""}
-                    onClick={() => handleSelect(staff)}
-                  >
-                    {staff}
-                  </li>
-                ))}
-              </ul>
-            )}
+      {/* STAFF - Always shows now */}
+      <div className="staff-filter-group">
+        <label>Staff</label>
+        <div className="custom-select" ref={dropdownRef}>
+          <div
+            className="select-trigger"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          >
+            <span>{selectedStaff === "all" ? "All Staff" : selectedStaff}</span>
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="#333">
+              <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+            </svg>
           </div>
+          {isDropdownOpen && (
+            <ul className="select-options">
+              <li
+                className={selectedStaff === "all" ? "active" : ""}
+                onClick={() => handleSelect("all")}
+              >
+                All Staff
+              </li>
+              {staffList.map((staff) => (
+                <li
+                  key={staff}
+                  className={selectedStaff === staff ? "active" : ""}
+                  onClick={() => handleSelect(staff)}
+                >
+                  {staff}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      )}
+      </div>
 
       {/* DAY */}
       <div className="staff-filter-group day-group-mobile">

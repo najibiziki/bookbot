@@ -4,7 +4,6 @@
 .page-wrapper {
   width: 80%;
   margin: 60px auto;
-  overflow-x: hidden;
 }
 
 @media (max-width: 768px) {
@@ -22,6 +21,13 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+/* THIS FIXES THE HIDDEN DROPDOWN ON MOBILE */
+.sidebar-left {
+  position: relative;
+  z-index: 50; /* Forces sidebar and dropdown to sit ABOVE the table */
+  overflow: visible; /* Prevents any clipping */
 }
 
 @media (min-width: 860px) {
@@ -50,6 +56,8 @@
   overflow-x: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  position: relative;
+  z-index: 1; /* Keeps table BELOW the filter dropdown */
 }
 
 .table-container::-webkit-scrollbar {

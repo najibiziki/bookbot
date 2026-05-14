@@ -102,10 +102,16 @@ export const useAppointments = (token) => {
 
   // Derived data
   const staffList = useMemo(() => {
-    return [...new Set(appointments.map((a) => a.staffName))]
-      .filter(Boolean)
-      .sort();
-  }, [appointments]);
+    const bizStaffNames = (staffData || []).map((s) => s.name).filter(Boolean);
+
+    const appointmentStaffNames = appointments
+      .map((a) => a.staffName)
+      .filter(Boolean);
+
+    const allNames = [...new Set([...bizStaffNames, ...appointmentStaffNames])];
+
+    return allNames.sort();
+  }, [staffData, appointments]);
 
   const selectedStaffData = useMemo(() => {
     if (!selectedStaff || selectedStaff === "all") return null;

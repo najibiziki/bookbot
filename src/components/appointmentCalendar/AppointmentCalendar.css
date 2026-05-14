@@ -109,7 +109,7 @@
 .h-cal-appointment {
   position: relative;
   height: 100%;
-  width: 100%;
+  width: calc(100% - 3px); /* Slightly more room for the shadow */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -118,6 +118,8 @@
   box-sizing: border-box;
   overflow: hidden;
   background: #03297a;
+  /* REMOVED: border-right: 2px solid rgba(255, 255, 255, 0.6); */
+  box-shadow: inset -2px 0 3px rgba(0, 0, 0, 0.25); /* NEW: Soft inner shadow for a clean 3D split */
   transition: all 0.2s ease;
 }
 

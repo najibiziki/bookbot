@@ -19,6 +19,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
+  overflow: visible;
 }
 
 .staff-filter-group label {
@@ -75,6 +76,7 @@
   min-width: 140px;
   user-select: none;
   z-index: 90;
+  overflow: visible;
 }
 
 .select-trigger {
@@ -186,6 +188,7 @@
     flex: 1; /* Default width */
     min-width: 0;
     align-items: stretch;
+    overflow: visible;
   }
 
   /* Search: Make it smaller */
