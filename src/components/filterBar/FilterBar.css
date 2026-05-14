@@ -170,7 +170,6 @@
   background: #333;
   color: #fff;
 }
-
 /* =========================
    MOBILE: TINY & RESIZED
 ========================= */
@@ -185,20 +184,30 @@
 
   .staff-filter-group {
     gap: 1px;
-    flex: 1; /* Default width */
+    flex: 1; /* Default fallback */
     min-width: 0;
     align-items: stretch;
     overflow: visible;
   }
 
-  /* Search: Make it smaller */
+  /* 1. SEARCH - The Biggest */
   .search-group-mobile {
+    flex: 1.6;
+  }
+
+  /* 2. STAFF - Second Biggest */
+  .staff-filter-group:nth-child(2) {
+    flex: 1.1;
+  }
+
+  /* 3. DAY - Third */
+  .day-group-mobile {
     flex: 0.8;
   }
 
-  /* Day: Make it bigger */
-  .day-group-mobile {
-    flex: 1.3;
+  /* 4. VIEW - The Smallest */
+  .staff-filter-group:nth-child(4) {
+    flex: 0.6;
   }
 
   /* SHRINK HEIGHTS FOR ALL */
