@@ -104,25 +104,15 @@
   height: 100%;
   z-index: 5;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent; /* FIX: Removes the phone's default gray flash */
-  outline: none; /* FIX: Prevents any accidental focus borders */
-  transition: filter 0.15s ease; /* Made slightly faster so it feels instant */
-}
-
-/* Hover effect applies to the WHOLE block */
-.h-cal-appointment-wrapper:hover {
-  filter: brightness(1.15);
-}
-
-/* Tap effect for phones applies to the WHOLE block */
-.h-cal-appointment-wrapper:active {
-  filter: brightness(0.9);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  /* Prevents 1px sub-pixel bleed on edges */
 }
 
 .h-cal-appointment {
   position: relative;
   height: 100%;
-  width: calc(100% - 2px); /* Keeps the clean gap */
+  width: calc(100% - 2px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -130,14 +120,13 @@
   padding: 0 5px;
   box-sizing: border-box;
   overflow: hidden;
-  background: #03297a;
-  /* border-right: 1px solid rgba(255, 255, 255, 0.25); The elegant white line */
+  background: #1e293b;
 }
 
 .h-cal-app-name {
   font-size: 0.5rem;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 500;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -147,12 +136,13 @@
 
 .h-cal-app-time {
   font-size: 0.45rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+  color: #cbd5e1;
   white-space: nowrap;
   line-height: 1;
   flex-shrink: 0;
 }
+
 /* ===========================
    Free Slots
    =========================== */
@@ -174,6 +164,7 @@
 .h-cal-free-slot.is-past-slot {
   cursor: default;
   pointer-events: none;
+  background: #0e1421;
 }
 
 .h-cal-free-slot-icon {
@@ -218,9 +209,4 @@
   .h-cal-free-slot-icon {
     font-size: 10px;
   }
-}
-.h-cal-free-slot.is-past-slot {
-  cursor: default;
-  pointer-events: none;
-  background: #0e1421;
 }

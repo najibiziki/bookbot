@@ -52,3 +52,17 @@
 .icon-wa:hover {
   background-color: #f0fdf4;
 }
+/* =========================
+   DELETE SPECIFIC STYLES
+========================= */
+.icon-delete {
+  color: #dc2626; /* Red 600 */
+  background-color: transparent;
+  padding: 0; /* Removes default button padding */
+  font-size: 0; /* Fixes inline alignment issues with SVG */
+  line-height: 0;
+}
+
+.icon-delete:hover {
+  background-color: #fef2f2; /* Red 50 - very light red background */
+}

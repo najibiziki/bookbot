@@ -6,8 +6,16 @@ import AddAppointmentModal from "../../components/addAppointmentModal/AddApointm
 import { useAppointments } from "../../hooks/appointment/useAppointments";
 import "./Dashboard.css";
 
+const getAuthToken = () => {
+  try {
+    return JSON.parse(localStorage.getItem("userInfo"))?.token;
+  } catch {
+    return null;
+  }
+};
+
 export default function Dashboard() {
-  const token = JSON.parse(localStorage.getItem("userInfo"))?.token;
+  const token = getAuthToken();
 
   const {
     loading,
@@ -22,10 +30,12 @@ export default function Dashboard() {
     setSelectedDay,
     viewMode,
     setViewMode,
+    isCalendarDisabled,
+    searchQuery,
+    setSearchQuery,
     isDropdownOpen,
     setIsDropdownOpen,
     dropdownRef,
-    isCalendarDisabled,
     handleSelect,
     calendarLayoutData,
     calculateFreeSlots,
@@ -34,8 +44,7 @@ export default function Dashboard() {
     handleFreeSlotClick,
     handleCloseModal,
     handleAddAppointment,
-    searchQuery,
-    setSearchQuery,
+    handleDeleteAppointment,
   } = useAppointments(token);
 
   if (loading) return <LoadingPage />;
@@ -76,6 +85,7 @@ export default function Dashboard() {
               staff={selectedStaffData}
               services={servicesList}
               onFreeSlotClick={handleFreeSlotClick}
+              onDeleteAppointment={handleDeleteAppointment}
             />
           )}
         </div>

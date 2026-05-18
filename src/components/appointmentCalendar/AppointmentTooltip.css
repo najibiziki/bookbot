@@ -1,8 +1,8 @@
 .h-cal-tooltip {
   position: absolute;
   bottom: calc(100% + 4px);
-  background: #03297a;
-  padding: 3px 6px;
+  background: #1e293b;
+  padding: 6px 6px;
   border-radius: 4px;
   white-space: nowrap;
   z-index: 100;
@@ -22,7 +22,7 @@
   transform: var(--arrow-transform, translateX(-50%));
   border-width: 5px 5px 0 5px;
   border-style: solid;
-  border-color: #03297a transparent transparent transparent;
+  border-color: #1e293b transparent transparent transparent;
 }
 
 .h-cal-tooltip-info {

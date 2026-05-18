@@ -19,6 +19,7 @@ export default function AppointmentCalendar({
   staff,
   services = [],
   onFreeSlotClick,
+  onDeleteAppointment,
 }) {
   const [activeTooltip, setActiveTooltip] = useState(null);
   const lastLayoutSignatureRef = useRef(null);
@@ -164,6 +165,7 @@ export default function AppointmentCalendar({
                       appStart={appStart}
                       appEnd={appEnd}
                       position={getTooltipPosition(leftPercent)}
+                      onDelete={onDeleteAppointment}
                     />
                   )}
                 </div>

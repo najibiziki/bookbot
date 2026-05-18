@@ -1,12 +1,14 @@
 import "./AppointmentTooltip.css";
 import CallButton from "../buttons/CallButton";
 import WhatsAppButton from "../buttons/WhatsAppButton";
+import DeleteButton from "../buttons/DeleteButton";
 
 export default function AppointmentTooltip({
   app,
   appStart,
   appEnd,
   position = "center",
+  onDelete,
 }) {
   let tooltipStyle = {};
 
@@ -47,7 +49,7 @@ export default function AppointmentTooltip({
       <div className="h-cal-tooltip-info">
         <div className="h-cal-tooltip-name">{app.clientName}</div>
         <div className="h-cal-tooltip-time">
-          {appStart.format("HH:mm")}-{appEnd.format("HH:mm")} | $
+          {appStart.format("HH:mm")}-{appEnd.format("HH:mm")} | ${" "}
           {app.totalPrice}
         </div>
       </div>
@@ -57,6 +59,7 @@ export default function AppointmentTooltip({
       <div className="h-cal-tooltip-actions">
         <CallButton phoneNumber={app.clientPhone} />
         <WhatsAppButton phoneNumber={app.clientPhone} />
+        <DeleteButton onClick={() => onDelete(app._id)} />
       </div>
     </div>
   );

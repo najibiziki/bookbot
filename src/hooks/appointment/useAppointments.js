@@ -46,7 +46,7 @@ export const useAppointments = (token) => {
 
   // UI state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // Search state
+  const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef(null);
 
   // Modal state
@@ -63,7 +63,7 @@ export const useAppointments = (token) => {
   // Fetch initial data
   const fetchInitialData = useCallback(async () => {
     if (!token) return;
-
+    setLoading(true);
     try {
       const [appRes, bizRes] = await Promise.all([
         fetch(`${API_URL}/api/business/appointments`, {
@@ -103,14 +103,10 @@ export const useAppointments = (token) => {
   // Derived data
   const staffList = useMemo(() => {
     const bizStaffNames = (staffData || []).map((s) => s.name).filter(Boolean);
-
     const appointmentStaffNames = appointments
       .map((a) => a.staffName)
       .filter(Boolean);
-
-    const allNames = [...new Set([...bizStaffNames, ...appointmentStaffNames])];
-
-    return allNames.sort();
+    return [...new Set([...bizStaffNames, ...appointmentStaffNames])].sort();
   }, [staffData, appointments]);
 
   const selectedStaffData = useMemo(() => {
@@ -160,22 +156,17 @@ export const useAppointments = (token) => {
         .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
     }
 
+    // PERFORMANCE FIX: Calculate these once outside the loop
+    const startOfSelectedWeek = moment(selectedDay).startOf("isoWeek");
+    const startOfCurrentWeek = moment().tz(timezone).startOf("isoWeek");
+    const endOfWeek = startOfSelectedWeek.clone().add(6, "days").endOf("day");
+    const isPastWeek = startOfSelectedWeek.isBefore(startOfCurrentWeek, "day");
+
     const filteredByDate = byStaff.filter((a) => {
       const appDate = moment.utc(a.startTime).tz(timezone);
 
       if (viewMode === "calendar") {
-        const startOfSelectedWeek = moment(selectedDay).startOf("isoWeek");
-        const startOfCurrentWeek = moment().tz(timezone).startOf("isoWeek");
-
-        if (startOfSelectedWeek.isBefore(startOfCurrentWeek, "day")) {
-          return false;
-        }
-
-        const endOfWeek = startOfSelectedWeek
-          .clone()
-          .add(6, "days")
-          .endOf("day");
-
+        if (isPastWeek) return false;
         return (
           appDate.isSameOrAfter(startOfSelectedWeek, "day") &&
           appDate.isSameOrBefore(endOfWeek, "day")
@@ -185,7 +176,6 @@ export const useAppointments = (token) => {
       return appDate.format("YYYY-MM-DD") === selectedDay;
     });
 
-    // Apply Search Filter
     const finalFiltered = searchQuery.trim()
       ? filteredByDate.filter((a) =>
           a.clientName?.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -213,15 +203,18 @@ export const useAppointments = (token) => {
     const weekDays = Array.from({ length: 7 }, (_, i) =>
       startDay.clone().add(i, "days"),
     );
+
     const weeklyOff = selectedStaffData?.weeklyOff || [];
     const vacations = selectedStaffData?.vacations || [];
     const weekFreeDays = getWeekFreeDays(weekDays, weeklyOff, vacations);
     const templateSegments = extractTemplateSegments(workingPeriods);
+
     const normalLayout = createCalendarLayout(
       workingPeriods,
       getDayKey(moment(selectedDay)),
       freeTimeColor,
     );
+
     const { normalDays, exceptionDays } = classifyWeekDays(
       weekDays,
       workingPeriods,
@@ -254,7 +247,6 @@ export const useAppointments = (token) => {
     isCalendarDisabled,
   ]);
 
-  // Calculate free slots for a given day
   const calculateFreeSlots = useCallback(
     (dayShifts, dayApps) => {
       if (!dayShifts?.length) return [];
@@ -310,6 +302,7 @@ export const useAppointments = (token) => {
     setSelectedFreeSlot(null);
   };
 
+  // IMPROVEMENT: Returns { success, error } instead of using alert()
   const handleAddAppointment = async (payload) => {
     try {
       const response = await fetch(`${API_URL}/api/appointments`, {
@@ -324,30 +317,53 @@ export const useAppointments = (token) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to create appointment");
+        return {
+          success: false,
+          error: data.message || "Failed to create appointment",
+        };
       }
 
       handleCloseModal();
       await fetchInitialData();
+      return { success: true };
     } catch (error) {
       console.error("Error saving appointment:", error);
-      alert(error.message || "Something went wrong while booking.");
+      return { success: false, error: "Something went wrong while booking." };
+    }
+  };
+
+  // IMPROVEMENT: Returns { success, error } instead of using alert()
+  const handleDeleteAppointment = async (appId) => {
+    try {
+      const response = await fetch(`${API_URL}/api/appointments/${appId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          error: data.message || "Failed to delete appointment",
+        };
+      }
+
+      await fetchInitialData();
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      return { success: false, error: "Something went wrong while deleting." };
     }
   };
 
   return {
-    // Data
     loading,
     timezone,
     workingPeriods,
     staffList,
     servicesList: servicesData,
-
-    // Filtered data
     sortedAppointments,
     calendarLayoutData,
-
-    // Filters
     selectedStaff,
     setSelectedStaff,
     selectedStaffData,
@@ -358,21 +374,16 @@ export const useAppointments = (token) => {
     isCalendarDisabled,
     searchQuery,
     setSearchQuery,
-
-    // UI
     isDropdownOpen,
     setIsDropdownOpen,
     dropdownRef,
-
-    // Handlers
     handleSelect,
     calculateFreeSlots,
-
-    // Modal
     showModal,
     selectedFreeSlot,
     handleFreeSlotClick,
     handleCloseModal,
     handleAddAppointment,
+    handleDeleteAppointment,
   };
 };
