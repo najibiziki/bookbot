@@ -7,7 +7,6 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Simplified retrieval: JSON.parse(null) returns null, so this handles missing items automatically
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const handleLogout = () => {
@@ -21,14 +20,8 @@ export default function Navbar() {
         <div className="navbar-brand">
           <Link to="/dashboard" className="navbar-logo">
             <BookBotIcon size={32} color="#4f46e5" />
-            BookBot
+            Appointo
           </Link>
-          {userInfo && (
-            <div className="user-status">
-              <span className="status-dot"></span>
-              <span className="status-email">{userInfo.email}</span>
-            </div>
-          )}
         </div>
 
         <div className="menu-icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -46,7 +39,6 @@ export default function Navbar() {
             </Link>
           </li>
 
-          {/* ADDED: Hide this link if the user is an admin */}
           {!userInfo?.isAdmin && (
             <li className="nav-item">
               <Link
@@ -59,7 +51,7 @@ export default function Navbar() {
             </li>
           )}
 
-          {userInfo && userInfo.isAdmin && (
+          {userInfo?.isAdmin && (
             <li className="nav-item">
               <Link
                 to="/admin"
