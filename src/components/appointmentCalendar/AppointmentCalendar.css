@@ -172,6 +172,7 @@
 @media (max-width: 480px) {
   .h-calendar-container {
     margin-top: 50px;
+    gap: 8px;
   }
 
   .h-cal-day-label {
