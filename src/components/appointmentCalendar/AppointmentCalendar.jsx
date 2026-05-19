@@ -12,6 +12,9 @@ import {
 import CalendarHourHeader from "../calendarHeader/CalendarHourHeader";
 import AppointmentTooltip from "./AppointmentTooltip";
 
+const getMomentAtMins = (day, mins) =>
+  day.clone().startOf("day").add(mins, "minutes");
+
 export default function AppointmentCalendar({
   calendarLayoutData,
   calculateFreeSlots,
@@ -40,7 +43,6 @@ export default function AppointmentCalendar({
     weekDays,
     weekFreeDays,
     normalLayout,
-    normalDays,
     exceptionDays,
     appointmentsByDay,
     workingPeriods,
@@ -49,7 +51,7 @@ export default function AppointmentCalendar({
   const handleFreeSlotClick = (e, slotData) => {
     e.stopPropagation();
     setActiveTooltip(null);
-    if (onFreeSlotClick) onFreeSlotClick(slotData);
+    onFreeSlotClick?.(slotData);
   };
 
   const getTooltipPosition = (leftPercent) => {
@@ -58,23 +60,35 @@ export default function AppointmentCalendar({
     return "center";
   };
 
+  const getFreeDayClass = (isStaffFreeDay, freeDayType) => {
+    if (!isStaffFreeDay) return "";
+    return freeDayType === "vacation" ? "is-vacation" : "is-weekly-off";
+  };
+
+  const getSlotPayload = (day, slot) => ({
+    date: day.format("YYYY-MM-DD"),
+    dateMoment: day.clone(),
+    startTime: toTimeStr(slot.startMins),
+    endTime: toTimeStr(slot.endMins),
+    startMins: slot.startMins,
+    endMins: slot.endMins,
+    duration: slot.endMins - slot.startMins,
+    timezone,
+    services,
+    staff,
+  });
+
   const renderDayRow = (day, layout, isStaffFreeDay, freeDayType) => {
     const dayKey = getDayKey(day);
     const dayId = day.format("YYYY-MM-DD");
     const dayShifts = layout.getShiftsForDay(dayKey);
     const isFullyOff = !dayShifts.length || isStaffFreeDay;
     const dayApps = appointmentsByDay[dayId] || [];
-    const freeSlots = calculateFreeSlots(dayShifts, dayApps);
-
-    const freeDayClass = isStaffFreeDay
-      ? freeDayType === "vacation"
-        ? "is-vacation"
-        : "is-weekly-off"
-      : "";
+    const freeSlots = calculateFreeSlots(dayShifts, dayApps, dayId);
 
     return (
       <div
-        className={`h-cal-row ${day.isSame(moment(), "day") ? "is-today" : ""} ${freeDayClass}`}
+        className={`h-cal-row ${day.isSame(moment(), "day") ? "is-today" : ""} ${getFreeDayClass(isStaffFreeDay, freeDayType)}`}
       >
         <div className="h-cal-day-label">
           <div className="h-cal-day-name">{day.format("ddd")}</div>
@@ -92,18 +106,11 @@ export default function AppointmentCalendar({
         >
           {!isFullyOff &&
             freeSlots.map((slot, index) => {
-              const slotStartMoment = day
-                .clone()
-                .startOf("day")
-                .add(slot.startMins, "minutes");
-              const slotEndMoment = day
-                .clone()
-                .startOf("day")
-                .add(slot.endMins, "minutes");
-              const styles = layout.getStyle(slotStartMoment, slotEndMoment);
+              const slotStart = getMomentAtMins(day, slot.startMins);
+              const slotEnd = getMomentAtMins(day, slot.endMins);
               const duration = slot.endMins - slot.startMins;
-              const isDisabled =
-                slotEndMoment.isBefore(moment()) || duration < 15;
+              const isDisabled = slotEnd.isBefore(moment()) || duration < 15;
+              const styles = layout.getStyle(slotStart, slotEnd);
 
               return (
                 <div
@@ -112,18 +119,7 @@ export default function AppointmentCalendar({
                   style={{ left: styles.left, width: styles.width }}
                   onClick={(e) => {
                     if (isDisabled) return;
-                    handleFreeSlotClick(e, {
-                      date: dayId,
-                      dateMoment: day.clone(),
-                      startTime: toTimeStr(slot.startMins),
-                      endTime: toTimeStr(slot.endMins),
-                      startMins: slot.startMins,
-                      endMins: slot.endMins,
-                      duration,
-                      timezone,
-                      services,
-                      staff,
-                    });
+                    handleFreeSlotClick(e, getSlotPayload(day, slot));
                   }}
                 >
                   {!isDisabled && <div className="h-cal-free-slot-icon">+</div>}
@@ -137,6 +133,7 @@ export default function AppointmentCalendar({
               const appEnd = moment.utc(app.endTime).tz(timezone);
               const styles = layout.getStyle(appStart, appEnd);
               const leftPercent = parseFloat(styles.left) || 0;
+              const isActive = activeTooltip === app._id;
 
               return (
                 <div
@@ -145,21 +142,19 @@ export default function AppointmentCalendar({
                   style={{ left: styles.left, width: styles.width }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setActiveTooltip(
-                      activeTooltip === app._id ? null : app._id,
-                    );
+                    setActiveTooltip(isActive ? null : app._id);
                   }}
                 >
                   <div className="h-cal-appointment">
                     <span className="h-cal-app-name">{app.clientName}</span>
                     {styles.duration >= 40 && (
                       <span className="h-cal-app-time">
-                        {appStart.format("HH:mm")}-{appEnd.format("HH:mm")}
+                        {appStart.format("HH:mm")}...
                       </span>
                     )}
                   </div>
 
-                  {activeTooltip === app._id && (
+                  {isActive && (
                     <AppointmentTooltip
                       app={app}
                       appStart={appStart}
@@ -185,14 +180,12 @@ export default function AppointmentCalendar({
         const dayId = day.format("YYYY-MM-DD");
         const isException = exceptionDays.has(dayId);
         const isStaffFreeDay = weekFreeDays.has(dayId);
-        const isNormalDay = normalDays.has(dayId);
 
-        let freeDayType = null;
-        if (isStaffFreeDay) {
-          freeDayType = staff?.weeklyOff?.includes(getDayKey(day))
+        const freeDayType = isStaffFreeDay
+          ? staff?.weeklyOff?.includes(getDayKey(day))
             ? "weeklyOff"
-            : "vacation";
-        }
+            : "vacation"
+          : null;
 
         const layoutSignature = getDaySignature(
           day,
@@ -211,7 +204,9 @@ export default function AppointmentCalendar({
 
         const shouldShowHeader =
           !isOffDay && layoutSignature !== lastLayoutSignatureRef.current;
-        if (!isOffDay) lastLayoutSignatureRef.current = layoutSignature;
+        if (!isOffDay) {
+          lastLayoutSignatureRef.current = layoutSignature;
+        }
 
         return (
           <div key={dayId}>
