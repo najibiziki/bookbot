@@ -301,8 +301,12 @@ export const createCalendarLayout = (
       const hasShift = dayShifts.some(
         (s) => s.startMins <= seg.startMin && s.endMins >= seg.endMin,
       );
-      const color = hasShift ? "#111827" : freeTimeColor;
-      return `${color} ${startPct}%, ${color} ${endPct}%`;
+
+      if (hasShift) {
+        return `#111827 ${startPct}%, #1570d8 ${endPct}%`;
+      }
+
+      return `${freeTimeColor} ${startPct}%, ${freeTimeColor} ${endPct}%`;
     });
     return `linear-gradient(to right, ${stops.join(", ")})`;
   };
@@ -362,7 +366,7 @@ export const createExceptionDayLayout = (
       const endPct = timeToPercent(toTimeStr(seg.endMin));
       if (seg.type === "break")
         return `transparent ${startPct}%, transparent ${endPct}%`;
-      return `#111827 ${startPct}%, #111827 ${endPct}%`;
+      return `#111827 ${startPct}%, #1570d8 ${endPct}%`;
     });
     return `linear-gradient(to right, ${stops.join(", ")})`;
   };

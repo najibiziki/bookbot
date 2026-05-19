@@ -22,7 +22,7 @@
   flex-grow: 1;
   position: relative;
   height: 28px;
-  background-color: transparent;
+  background-color: #f8fafc; /* Clean, soft slate color to make rows visible */
   background-size: 100% 100%;
   overflow: visible;
 }
@@ -106,7 +106,6 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   outline: none;
-  /* Prevents 1px sub-pixel bleed on edges */
 }
 
 .h-cal-appointment {
@@ -120,13 +119,16 @@
   padding: 0 5px;
   box-sizing: border-box;
   overflow: hidden;
-  background: #1e293b;
+  background: rgba(255, 255, 255, 0.85); /* ⬅️ Semi-transparent white */
+  backdrop-filter: blur(4px); /* ⬅️ Blurs the gradient behind it */
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .h-cal-app-name {
   font-size: 0.5rem;
   font-weight: 500;
-  color: #ffffff;
+  color: black;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -137,7 +139,7 @@
 .h-cal-app-time {
   font-size: 0.45rem;
   font-weight: 400;
-  color: #cbd5e1;
+  color: black;
   white-space: nowrap;
   line-height: 1;
   flex-shrink: 0;
@@ -164,13 +166,13 @@
 .h-cal-free-slot.is-past-slot {
   cursor: default;
   pointer-events: none;
-  background: #0e1421;
+  background: rgba(255, 255, 255, 0.65);
 }
 
 .h-cal-free-slot-icon {
   font-size: 14px;
   font-weight: 400;
-  color: #41474e;
+  color: #9fa3a7;
   user-select: none;
   line-height: 1;
 }
@@ -183,6 +185,9 @@
    Responsive
    =========================== */
 @media (max-width: 480px) {
+  .h-calendar-container {
+    margin-top: 50px;
+  }
   .h-cal-day-label {
     width: 32px;
     height: 24px;

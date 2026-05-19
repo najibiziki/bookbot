@@ -87,7 +87,7 @@ export default function AppointmentCalendar({
             backgroundImage: isFullyOff
               ? "none"
               : layout.buildBackground(dayShifts),
-            backgroundColor: isFullyOff ? freeTimeColor : "transparent",
+            backgroundColor: isFullyOff ? "#111827" : "transparent",
           }}
         >
           {!isFullyOff &&
